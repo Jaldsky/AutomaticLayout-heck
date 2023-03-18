@@ -11,7 +11,7 @@ class SeleniumHelper(object):
 
     CHROME_DRIVER_PATH = path.join(getcwd(), 'drivers', 'chromedriver.exe')
     SITE_COMPONENTS_PATH = f"file:///{path.join(getcwd(), 'data', 'site_example', 'index.html')}"
-    SITE_SCREENSHOT_NAME = 'reference_sample.png'
+    SITE_SCREENSHOT_NAME = 'sample.png'
     SAVE_PATH = path.join(getcwd(), 'pics')
 
     def __init__(self):
