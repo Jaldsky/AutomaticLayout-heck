@@ -12,12 +12,12 @@
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <div>
-            <label for="file1">Загрузить сверстанную страницу:</label>
-            <input type="file" name="file1" id="file1">
+            <label for="zip">Загрузить сверстанную страницу:</label>
+            <input type="file" name="zip" id="zip">
         </div>
         <div>
-            <label for="file2">Загрузить эталонное изображение:</label>
-            <input type="file" name="file2" id="file2">
+            <label for="pic">Загрузить эталонное изображение:</label>
+            <input type="file" name="pic" id="pic">
         </div>
         <button type="submit">Выполнить</button>
     </form>
