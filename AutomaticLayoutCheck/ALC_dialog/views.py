@@ -3,36 +3,53 @@ from django.core.handlers.wsgi import WSGIRequest
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from .forms import FileUploadForm
-from ALC_dialog.ALC.ALC import ALC
+from ALC_dialog.ALC.Controller import Controller
 from django.core.files.storage import FileSystemStorage
-from os import path, getcwd
-import os
+from os import path, getcwd, makedirs, rename
 from django.conf import settings
-
+from datetime import datetime
 from typing import List, Dict, Union
 from .models import UploadedFile
+import logging
+import shutil
 
 
-def run_check(files_data: List[Dict[str: str]]) -> None:
-    print(files_data)
-    pass
+
+logger = logging.getLogger(__name__)
+
+
+def create_results_folder() -> str:
+    "return path"
+    folder_name = f'result {datetime.now().strftime("%d.%m %H-%M-%S")}'
+    folder_path = path.join(getcwd(), 'results', folder_name)
+    if not path.exists(folder_path):
+        makedirs(folder_path)
+    return folder_path
+
+
+def _move_uploaded_files(from_path: str, to_path: str) -> str:
+    'doc'
+    return shutil.move(from_path, to_path)
 
 
 def execute(request: WSGIRequest) -> None:
+    'doc'
     if request.method == 'POST':
+        folder_path = create_results_folder()
         files_data = list()
-        for file_name in request.FILES.keys():
+        for request_type in request.FILES.keys():
             data = dict()
-            file = request.FILES[file_name]
-            file_type = file_name.split('.')[-1]
-            uploaded_file = UploadedFile(file=file, name=file_name, type=file_type)
-            uploaded_file.save()
+            file = request.FILES[request_type]
+            file_name, file_extension = str(file).split('.')
 
-            file_path = uploaded_file.file.path
-            data['file_name'] = file_name
-            data['file_path'] = file_path
+            uploaded_file = UploadedFile(name=file_name, type=file_extension)
+            uploaded_file.upload_to = folder_path
+            uploaded_file.save_file(file)
+
+            data['file_extension'] = file_extension
+            data['file_path'] = _move_uploaded_files(uploaded_file.file.path, folder_path)
             files_data.append(data)
-        run_check(files_data)
+        Controller(files_data, folder_path).exec()
         return redirect('ALC_dialog')
     else:
         form = FileUploadForm()

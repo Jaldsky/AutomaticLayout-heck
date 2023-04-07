@@ -3,7 +3,7 @@ from os import path, getcwd
 
 
 # UPLOADS_FILES_PATH = path.join(getcwd(), 'ALC_dialog', 'ALC', 'data', 'uploads')
-UPLOADS_FILES_PATH = 'ALC_dialog/ALC/uploads'
+UPLOADS_FILES_PATH = 'results/uploads'
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
