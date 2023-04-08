@@ -1,9 +1,9 @@
-from os import path, getcwd
+from os import path, getcwd, scandir
 from pyunpack import Archive
 import logging
 from ALC_dialog.ALC.selenium_helper import SeleniumHelper
-from ALC_dialog.ALC.pic_format_converter import PicFormatConverter
-
+from ALC_dialog.ALC.image_helper import ImageHelper
+from typing import List, Union, Tuple
 
 CHROME_DRIVER_PATH = path.join(getcwd(), 'drivers', 'chromedriver.exe')
 SAVE_PATH = path.join(getcwd(), 'pics')
@@ -22,13 +22,16 @@ class Controller(object):
         self.folder_path = folder_path
 
     @staticmethod
-    def unzip(site_path):
+    def unzip(site_path: str) -> List:
         file_name = str(site_path).split('\\')[-1]
         save_path = str(site_path).replace(file_name, '')
         Archive(site_path).extractall(save_path)
 
+        folders_paths = [path.join(save_path, item.name) for item in scandir(save_path) if not item.is_file()]
+        return folders_paths
+
     @property
-    def get_site_pic_paths(self):
+    def get_site_pic_paths(self) -> Tuple[str, str]:
         site_path = str()
         sample_pic_path = str()
 
@@ -48,9 +51,14 @@ class Controller(object):
 
     def exec(self):
         site_path, sample_pic_path = self.get_site_pic_paths
-        self.unzip(site_path)
 
+        image_helper = ImageHelper()
+        reference_sample = image_helper.convert_psd_to_png(sample_pic_path, self.folder_path)
+        img_width, img_height = image_helper.get_image_resolution(reference_sample)
 
+        folders_paths = self.unzip(site_path)
+
+        # придумать что делать с разрешением изображением сайта
         # x = SeleniumHelper(SITE_COMPONENTS_PATH,
         #                    SAVE_PATH,
         #                    CHROME_DRIVER_PATH).get_full_screenshot_page
