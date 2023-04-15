@@ -9,6 +9,9 @@
 </head>
 <body>
 	<div class="container">
+        <div class="title-block">
+			<h1>Automatic Layout Checker</h1>
+		</div>
         <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
             <div class="small-block">
@@ -28,16 +31,20 @@
             </div>
         </form>
 		<div class="large-block">
-			<div class="image-block">
-                <img src="{% static reference_sample %}" alt="Uploaded Image">
-            </div>
-			<div class="image-block">
-                {% for img in sample.values %}
-                    <div>
-                        <img src="{% static img %}" alt="Uploaded Image">
-                    </div>
-                {% endfor %}
-            </div>
+            {% if reference_sample %}
+                <div class="image-block">
+                    <img src="{% static reference_sample %}" alt="Uploaded Image">
+                </div>
+            {% endif %}
+            {% if sample %}
+                <div class="image-block">
+                    {% for img in sample.values %}
+                        <div>
+                            <img src="{% static img %}" alt="Uploaded Image">
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
 		</div>
 	</div>
 </body>
