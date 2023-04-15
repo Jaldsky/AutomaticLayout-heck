@@ -1,0 +1,44 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <link rel="shortcut icon" type="image/png" href="{% static 'site_components/img/favicon.ico' %}"/>
+    <link rel="stylesheet" href="{% static 'site_components/css/style.css' %}">
+    <meta charset="UTF-8">
+    <title>Automatic Layout Check</title>
+</head>
+<body>
+	<div class="container">
+        <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+            <div class="small-block">
+                <div class="button-group">
+                    <label for="file-input-1">
+                        <p>Загрузить эталонное изображение:</p>
+                        <input type="file" id="pic" name="pic">
+                    </label>
+                    <label for="file-input-2">
+                        <p>Загрузить сверстанную страницу:</p>
+                        <input type="file" id="zip" name="zip">
+                    </label>
+                </div>
+            </div>
+            <div class="middle-block">
+                <button type="submit" id="start-btn">Выполнить</button>
+            </div>
+        </form>
+		<div class="large-block">
+			<div class="image-block">
+                <img src="{% static reference_sample %}" alt="Uploaded Image">
+            </div>
+			<div class="image-block">
+                {% for img in sample.values %}
+                    <div>
+                        <img src="{% static img %}" alt="Uploaded Image">
+                    </div>
+                {% endfor %}
+            </div>
+		</div>
+	</div>
+</body>
+</html>
