@@ -7,12 +7,11 @@ from Screenshot import Screenshot_Clipping
 
 
 CHROME_DRIVER_PATH = path.join(getcwd(), 'drivers', 'chromedriver.exe')
+SITE_SCREENSHOT_NAME = 'sample.png'
 
 
 class SeleniumHelper(object):
     """Класс для работы с Selenium"""
-
-    SITE_SCREENSHOT_NAME = 'sample.png'
 
     def __init__(self, browser_width: int = None, browser_height: int = None) -> None:
         """Инициализация класса.
@@ -45,4 +44,4 @@ class SeleniumHelper(object):
         self.driver.get(index_path)
         return Screenshot_Clipping.Screenshot().full_Screenshot(driver=self.driver,
                                                                 save_path=save_img_path,
-                                                                image_name=self.SITE_SCREENSHOT_NAME)
+                                                                image_name=SITE_SCREENSHOT_NAME)

@@ -5,10 +5,11 @@ from PIL import Image
 from psd_tools import PSDImage
 
 
+PIC_NAME = 'reference_sample.png'
+
+
 class ImageHelper(object):
     """Класс для работы с изображениями"""
-
-    PIC_NAME = 'reference_sample.png'
 
     def convert_psd_to_png(self, path_to_img: str, path_to_save: str) -> str:
         """Конвертация формата psd в png.
@@ -21,7 +22,7 @@ class ImageHelper(object):
             Путь с сохраненным сконвертированным изображением.
         """
         psd_pic = PSDImage.open(path_to_img)
-        save_path = path.join(path_to_save, self.PIC_NAME)
+        save_path = path.join(path_to_save, PIC_NAME)
         psd_pic.composite().save(save_path)
         return save_path
 
