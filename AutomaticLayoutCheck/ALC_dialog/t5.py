@@ -17,17 +17,17 @@ labels = np.zeros((num_pairs,))
 # Define indices for each digit class
 digit_indices = [np.where(y_train == i)[0] for i in range(10)]
 
-# Create pairs of images and their corresponding labels
+# Create pairs of site_components and their corresponding labels
 for i in range(num_pairs):
     # Choose a random digit class
     digit_class = np.random.randint(0, 10)
 
-    # Choose two random images from the chosen digit class
+    # Choose two random site_components from the chosen digit class
     image_indices = np.random.choice(digit_indices[digit_class], size=2, replace=False)
     pair = x_train[image_indices]
     pairs[i] = pair
 
-    # Assign label of 1 if images are from the same digit class, 0 otherwise
+    # Assign label of 1 if site_components are from the same digit class, 0 otherwise
     if i % 2 == 0:
         labels[i] = 1
     else:

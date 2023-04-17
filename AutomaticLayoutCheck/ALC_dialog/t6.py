@@ -39,7 +39,7 @@ test_data = np.load('test_data.npy')
 # Define number of pairs to test
 num_pairs = test_data.shape[0]
 
-# Define labels for test pairs (0 if images are the same, 1 if images are different)
+# Define labels for test pairs (0 if site_components are the same, 1 if site_components are different)
 test_labels = np.zeros((num_pairs, 1))
 test_labels[num_pairs//2:] = 1
 

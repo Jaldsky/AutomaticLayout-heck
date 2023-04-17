@@ -1,21 +1,21 @@
 import cv2
 
-# Load the two images to be compared
+# Load the two site_components to be compared
 img1 = cv2.imread('1.png')
 img2 = cv2.imread('3.png')
 
 img1 = cv2.resize(img1, (500, 500))
 img2 = cv2.resize(img2, (500, 500))
 
-# Convert the images to grayscale
+# Convert the site_components to grayscale
 img1_gray = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
 img2_gray = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
 
-# Compute the Mean Structural Similarity Index (MSSIM) between the two images
+# Compute the Mean Structural Similarity Index (MSSIM) between the two site_components
 mssim = cv2.matchTemplate(img1_gray, img2_gray, cv2.TM_CCOEFF_NORMED)[0][0]
 
 # Print the MSSIM value
-print("The MSSIM value between the two images is:", mssim)
+print("The MSSIM value between the two site_components is:", mssim)
 
 # Индекс среднего структурного сходства (MSSIM) — это метод сравнения сходства между двумя изображениями. Он основан на индексе структурного сходства (SSIM), который сравнивает структурное сходство изображений, а не просто сравнивает значения пикселей, как метод среднеквадратичной ошибки (MSE).
 #
