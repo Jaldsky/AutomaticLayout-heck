@@ -1,4 +1,4 @@
-from os import path, getcwd, scandir, pardir, listdir, unlink
+from os import path, getcwd, scandir, pardir, listdir, unlink, rename
 from pyunpack import Archive
 import logging
 from ALC_dialog.ALC.selenium_helper import SeleniumHelper
@@ -45,6 +45,14 @@ class Controller(object):
             logger.error("Error: Failed to copy file - %s", e.args)
 
     @staticmethod
+    def rename_file(old_name, new_name):
+        try:
+            rename(old_name, new_name)
+            logger.error(f"{old_name} has been renamed to {new_name}")
+        except OSError as e:
+            logger.error(f"Error: {e}")
+
+    @staticmethod
     def get_site_pic_paths(files_data) -> Tuple[str, str]:
         site_path = str()
         sample_pic_path = str()
@@ -75,10 +83,17 @@ class Controller(object):
         self.delete_all_files_in_directory(self.DISPLAY_IMAGES_PATH)
         self.copy_file(reference_sample, self.DISPLAY_IMAGES_PATH)
 
-        imgs_path = [path.join(self.DISPLAY_IMAGES_PATH, PIC_NAME)]
+        imgs_path = {'reference_sample': path.join(self.DISPLAY_IMAGES_PATH, PIC_NAME)}
+        sample_paths = dict()
         for num, site_folder_path in enumerate(site_folders_paths):  # there can be several sites in the archive
             index_path = path.join(site_folder_path, 'index.html')
             sample_path = SeleniumHelper(img_width, img_height).get_full_screenshot_page(index_path, folder_path)
             self.copy_file(sample_path, self.DISPLAY_IMAGES_PATH)
-            imgs_path.append(path.join(self.DISPLAY_IMAGES_PATH, f'{sample_path}_{num}'))
+
+            current_file_path = path.join(self.DISPLAY_IMAGES_PATH, 'sample.png')
+            new_file_nam1e = f'sample_{num}.png'
+            new_file_path = path.join(self.DISPLAY_IMAGES_PATH, new_file_nam1e)
+            self.rename_file(current_file_path, new_file_path)
+            sample_paths[new_file_nam1e] = new_file_path
+        imgs_path['sample'] = sample_paths
         return imgs_path
