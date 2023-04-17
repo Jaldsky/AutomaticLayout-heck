@@ -48,7 +48,8 @@ class ComparatorBase:
 class ComparatorMeanSquaredError(ComparatorBase):
     """Класс для сравнения схожести двух изображений по методу среднеквадратичной ошибки (Mean Squared Error - MSE)."""
 
-    def __init__(self, reference_img_path: str, sample_img_path: str, threshold: float = 96.25) -> None:
+    def __init__(self, reference_img_path: str, sample_img_path: str,
+                 img_size: Tuple = (500, 500), threshold: float = 96.25) -> None:
         """Инициализация класса.
 
         Args:
@@ -58,6 +59,7 @@ class ComparatorMeanSquaredError(ComparatorBase):
         """
         self.reference_img_path = reference_img_path
         self.sample_img_path = sample_img_path
+        self.img_size = img_size
         self.threshold = threshold
 
     @property
@@ -92,10 +94,8 @@ class ComparatorMeanSquaredError(ComparatorBase):
         reference_img = self.imread_image(self.reference_img_path)
         sample_img = self.imread_image(self.sample_img_path)
 
-        img_size = (500, 500)
-
-        reference_img = self.resize_image(reference_img, img_size)
-        sample_img = self.resize_image(sample_img, img_size)
+        reference_img = self.resize_image(reference_img, self.img_size)
+        sample_img = self.resize_image(sample_img, self.img_size)
 
         # calculate the root mean square error (RMSE)
         mse = np.mean((reference_img - sample_img) ** 2)
@@ -113,7 +113,8 @@ class ComparatorStructuralSimilarityIndex(ComparatorBase):
     """Класс для сравнения схожести двух изображений по методу
     индексу структурного подобия (Structural Similarity Index - SSIM)."""
 
-    def __init__(self, reference_img_path: str, sample_img_path: str, threshold: float = 53.5) -> None:
+    def __init__(self, reference_img_path: str, sample_img_path: str,
+                 img_size: Tuple = (500, 500), threshold: float = 53.5) -> None:
         """Инициализация класса.
 
         Args:
@@ -123,6 +124,7 @@ class ComparatorStructuralSimilarityIndex(ComparatorBase):
         """
         self.reference_img_path = reference_img_path
         self.sample_img_path = sample_img_path
+        self.img_size = img_size
         self.threshold = threshold
 
     @property
@@ -157,10 +159,8 @@ class ComparatorStructuralSimilarityIndex(ComparatorBase):
         reference_img = self.imread_image(self.reference_img_path)
         sample_img = self.imread_image(self.sample_img_path)
 
-        img_size = (500, 500)
-
-        reference_img = self.resize_image(reference_img, img_size)
-        sample_img = self.resize_image(sample_img, img_size)
+        reference_img = self.resize_image(reference_img, self.img_size)
+        sample_img = self.resize_image(sample_img, self.img_size)
 
         # Convert the images to grayscale
         gray_reference_img = cvtColor(reference_img, COLOR_BGR2GRAY)
