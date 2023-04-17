@@ -9,30 +9,63 @@
 </head>
 <body>
 	<div class="container">
+
         <div class="title-block">
 			<h1>Automatic Layout Checker</h1>
 		</div>
+
         <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-            <div class="small-block">
-                <div class="button-group">
-                    <label for="file-input-1">
-                        <p>Загрузить эталонное изображение:</p>
-                        <input type="file" id="pic" name="pic">
-                    </label>
-                    <label for="file-input-2">
-                        <p>Загрузить сверстанную страницу:</p>
-                        <input type="file" id="zip" name="zip">
-                    </label>
-                </div>
+            {% csrf_token %}
+
+        <div class="upper-block">
+            <div id="menu">
+                <label class="file-upload">
+                    <input type="file" name="pic">
+                    <span>Загрузить эталонное изображение</span>
+                </label>
+                <label class="file-upload">
+                    <input type="file" name="zip">
+                    <span>Загрузить сверстанную страницу</span>
+                </label>
+                <label class="execute-button">
+                    <button type="submit" id="start-btn">Выполнить</button>
+                </label>
             </div>
-            <div class="middle-block">
-                <button type="submit" id="start-btn">Выполнить</button>
+        </div>
+
+        <div class="small-block">
+            <div class="results-block">
+                <table class="table">
+                    <tbody>
+                        <tr class="">
+                            <th colspan="2">Сравниваемое изображение 1</th>
+                        </tr>
+                        <tr>
+                            <th>Метод сравнения</th>
+                            <th>Результат сравнения</th>
+                        </tr>
+                        <tr>
+                            <td>Среднеквадратическая ошибка</td>
+                            <td>x</td>
+                        </tr>
+                        <tr>
+                            <td>Индекс среднего структурного сходства</td>
+                            <td>x</td>
+                        </tr>
+                        <tr>
+                            <td>Нейронка</td>
+                            <td>x</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
+        </div>
         </form>
+
 		<div class="large-block">
             {% if reference_sample %}
                 <div class="image-block">
+                    <label id="pic_title">Эталонное изображение</label>
                     <img src="{% static reference_sample %}" alt="Uploaded Image">
                 </div>
             {% endif %}
@@ -40,12 +73,14 @@
                 <div class="image-block">
                     {% for img in sample.values %}
                         <div>
+                            <label id="pic_title">Сравниваемое изображение {{ forloop.counter }}</label>
                             <img src="{% static img %}" alt="Uploaded Image">
                         </div>
                     {% endfor %}
                 </div>
             {% endif %}
 		</div>
+
 	</div>
 </body>
 </html>
