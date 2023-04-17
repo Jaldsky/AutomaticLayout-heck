@@ -1,5 +1,6 @@
 from typing import Tuple
-from cv2 import imread, resize, cvtColor, COLOR_BGR2RGB
+from skimage.metrics import structural_similarity
+from cv2 import imread, resize, cvtColor, cvtColor, COLOR_BGR2RGB, COLOR_BGR2GRAY
 import numpy as np
 
 
@@ -91,7 +92,7 @@ class ComparatorMeanSquaredError(ComparatorBase):
         reference_img = self.imread_image(self.reference_img_path)
         sample_img = self.imread_image(self.sample_img_path)
 
-        img_size = (900, 900)
+        img_size = (500, 500)
 
         reference_img = self.resize_image(reference_img, img_size)
         sample_img = self.resize_image(sample_img, img_size)
@@ -106,3 +107,65 @@ class ComparatorMeanSquaredError(ComparatorBase):
         # calculate the normalized root mean square error (NRMSE)
         nrmse = (rmse / max_pixel_val) * 100
         return 100 - nrmse
+
+
+class ComparatorStructuralSimilarityIndex(ComparatorBase):
+    """Класс для сравнения схожести двух изображений по методу
+    индексу структурного подобия (Structural Similarity Index - SSIM)."""
+
+    def __init__(self, reference_img_path: str, sample_img_path: str, threshold: float = 53.5) -> None:
+        """Инициализация класса.
+
+        Args:
+            reference_img_path: путь до эталонного изображения.
+            sample_img_path: путь до сравниваемого изображения.
+            threshold: попрог определения схожести изображений.
+        """
+        self.reference_img_path = reference_img_path
+        self.sample_img_path = sample_img_path
+        self.threshold = threshold
+
+    @property
+    def are_images_similar(self) -> bool:
+        """Функция проверки схожести изображений.
+
+        Returns:
+            True - похожи, False - не похожи.
+        """
+        nrmse = self.compare_exec
+        if nrmse <= self.threshold:
+            return False
+        else:
+            return True
+
+    @property
+    def get_similarity_percentages(self) -> float:
+        """Получить процент схожести изображений.
+
+        Returns:
+            Процент схожести.
+        """
+        return self.compare_exec
+
+    @property
+    def compare_exec(self) -> float:
+        """Выполнить сравнение схожести двух изображений.
+
+        Returns:
+            Схожесть двух изображений в процентах.
+        """
+        reference_img = self.imread_image(self.reference_img_path)
+        sample_img = self.imread_image(self.sample_img_path)
+
+        img_size = (500, 500)
+
+        reference_img = self.resize_image(reference_img, img_size)
+        sample_img = self.resize_image(sample_img, img_size)
+
+        # Convert the images to grayscale
+        gray_reference_img = cvtColor(reference_img, COLOR_BGR2GRAY)
+        gray_sample_img = cvtColor(sample_img, COLOR_BGR2GRAY)
+
+        # Calculate the SSIM score
+        ssim_score = structural_similarity(gray_reference_img, gray_sample_img)
+        return ssim_score * 100
