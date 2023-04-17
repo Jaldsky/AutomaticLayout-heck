@@ -2,11 +2,9 @@ from pathlib import Path
 from os import path, getcwd
 
 
-# UPLOADS_FILES_PATH = path.join(getcwd(), 'ALC_dialog', 'ALC', 'data', 'uploads')
 UPLOADS_FILES_PATH = 'results/uploads'
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
 
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
@@ -116,5 +114,5 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 STATICFILES_DIRS = [
-    path.join(BASE_DIR, 'ALC_dialog/static'),
+    path.join(BASE_DIR, 'ALC_dialog', 'static'),
 ]
