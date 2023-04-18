@@ -114,7 +114,7 @@ class ComparatorStructuralSimilarityIndex(ComparatorBase):
     индексу структурного подобия (Structural Similarity Index - SSIM)."""
 
     def __init__(self, reference_img_path: str, sample_img_path: str,
-                 img_size: Tuple = (500, 500), threshold: float = 53.5) -> None:
+                 img_size: Tuple = (500, 500), threshold: float = 45.5) -> None:
         """Инициализация класса.
 
         Args:
