@@ -1,3 +1,7 @@
 selenium==4.8.2
 Selenium-Screenshot==1.7.0
 psd-tools==1.9.24
+opencv-python==4.7.0.72
+Django==4.2
+pyunpack==0.3
+patool==1.12
