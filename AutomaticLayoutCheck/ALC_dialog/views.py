@@ -16,6 +16,10 @@ import shutil
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.conf import settings
+from AutomaticLayoutCheck.settings import ENABLE_CLEAR_LOCAL_CACHE
+from shutil import rmtree
+from os import path, getcwd, scandir, pardir, listdir
+
 
 logger = logging.getLogger(__name__)
 
@@ -33,6 +37,13 @@ def _move_uploaded_files(from_path: str, to_path: str) -> str:
     'doc'
     return shutil.move(from_path, to_path)
 
+def _delete_dir(dir_path: str):
+    for file in listdir(dir_path):
+        file_path = path.join(dir_path, file)
+        try:
+            rmtree(file_path)
+        except Exception as e:
+            logger.error(f"Error deleting file {file_path}: {e}")
 
 def execute(request: WSGIRequest) -> None:
     'doc'
@@ -52,6 +63,8 @@ def execute(request: WSGIRequest) -> None:
             data['file_path'] = _move_uploaded_files(uploaded_file.file.path, folder_path)
             files_data.append(data)
         data = Controller().exec(files_data, folder_path)
+        if ENABLE_CLEAR_LOCAL_CACHE:
+            _delete_dir(path.join(getcwd(), 'results'))
         return render(request, 'index.html', data)
     else:
         form = FileUploadForm()

@@ -2,7 +2,8 @@ from pathlib import Path
 from os import path, getcwd
 
 
-ENABLE_BEDAUB_TEXT = True
+ENABLE_BEDAUB_TEXT = False
+ENABLE_CLEAR_LOCAL_CACHE = True
 
 ENABLE_MSE_COMPARATOR = True
 ENABLE_SSIM_COMPARATOR = True
