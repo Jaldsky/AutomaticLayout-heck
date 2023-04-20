@@ -68,6 +68,14 @@ class ComparatorBase:
             Схожесть двух изображений в процентах."""
         return self.compare_exec
 
+    @property
+    def get_threshold(self) -> float:
+        """Получить порог сравнения схожести двух изображений.
+
+        Returns:
+            Порог схожести двух изображений."""
+        return self.threshold
+
     def prepare_image(self, img_path: str, img_size: Tuple[int, int]) -> np.ndarray:
         """Подготовить изображение для сравнения: представить изображение в виде массива,
         изменить размер изображения, перевести в градации серого.
@@ -109,7 +117,7 @@ class ComparatorMeanSquaredError(ComparatorBase):
         self.threshold = threshold
 
     @property
-    def are_images_similar(self) -> bool:
+    def are_images_similar(self) -> str:
         """Функция проверки схожести изображений.
 
         Returns:
@@ -117,9 +125,9 @@ class ComparatorMeanSquaredError(ComparatorBase):
         """
         nrmse = self.compare_exec
         if nrmse >= self.threshold:
-            return False
+            return 'Нет'
         else:
-            return True
+            return 'Да'
 
     @property
     def get_similarity_percentages(self) -> float:
@@ -168,7 +176,7 @@ class ComparatorStructuralSimilarityIndex(ComparatorBase):
         self.threshold = threshold
 
     @property
-    def are_images_similar(self) -> bool:
+    def are_images_similar(self) -> str:
         """Функция проверки схожести изображений.
 
         Returns:
@@ -176,9 +184,9 @@ class ComparatorStructuralSimilarityIndex(ComparatorBase):
         """
         nrmse = self.compare_exec
         if nrmse <= self.threshold:
-            return False
+            return 'Нет'
         else:
-            return True
+            return 'Да'
 
     @property
     def get_similarity_percentages(self) -> float:
