@@ -86,10 +86,9 @@ class Controller(object):
 
         reference_sample_path = path.join(self.DISPLAY_IMAGES_PATH, PIC_NAME)
         data = {'reference_sample': reference_sample_path}
-        sample_paths = dict()
-        CMSE = dict()
-        CSSIM = dict()
+        sample_data_list = list()
         for num, site_folder_path in enumerate(site_folders_paths):  # there can be several sites in the archive
+            sample_dict = dict()
 
             index_path = path.join(site_folder_path, 'index.html')
             sample_path = SeleniumHelper(img_width, img_height).get_full_screenshot_page(index_path, folder_path)
@@ -99,25 +98,31 @@ class Controller(object):
             new_file_nam1e = f'sample_{num}.png'
             new_file_path = path.join(self.DISPLAY_IMAGES_PATH, new_file_nam1e)
             self.rename_file(current_file_path, new_file_path)
-            sample_paths[new_file_nam1e] = new_file_path
-            #
-            # CMSE = ComparatorMeanSquaredError(reference_sample_path, new_file_path)
-            # CSSIM = ComparatorStructuralSimilarityIndex(reference_sample_path, new_file_path)
-            #
-            # CMSE_similarity_percentage = CMSE.get_similarity_percentages
-            # CSSIM_similarity_percentage = CSSIM.get_similarity_percentages
-            #
-            # CMSE_are_images_similar = CMSE.are_images_similar
-            # CSSIM_are_images_similar = CSSIM.are_images_similar
-            #
-            # CMSE['CMSE_similarity_percentage'] = CMSE_similarity_percentage
-            # CSSIM['CSSIM_similarity_percentage'] = CSSIM_similarity_percentage
-            #
-            # CMSE['CMSE_are_images_similar'] = CMSE_are_images_similar
-            # CSSIM['CSSIM_are_images_similar'] = CSSIM_are_images_similar
-        data['sample'] = sample_paths
-        # data['CMSE'] = CMSE
-        # data['CSSIM'] = CSSIM
-        
+
+            sample_dict['name'] = new_file_nam1e
+            sample_dict['path'] = new_file_path
+
+            cmse = ComparatorMeanSquaredError(reference_sample_path, new_file_path)
+            cssim = ComparatorStructuralSimilarityIndex(reference_sample_path, new_file_path)
+
+            cmse_sim_per = round(cmse.get_similarity_percentages, 2)
+            cssim_sim_per = round(cssim.get_similarity_percentages, 2)
+
+            cmse_sim_index = round(cmse.get_similarity_index, 2)
+            cssim_sim_index = round(cssim.get_similarity_index, 2)
+
+            cmse_are_sim = cmse.are_images_similar
+            cssim_are_sim = cssim.are_images_similar
+
+            cmse_threshold = cmse.get_threshold
+            cssim_threshold = cssim.get_threshold
+
+            sample_dict['CMSE'] = {'index': cmse_sim_index, 'similarity_percentage': cmse_sim_per,
+                                   'are_similar': cmse_are_sim, 'threshold': cmse_threshold}
+            sample_dict['CSSIM'] = {'index': cssim_sim_index, 'similarity_percentage': cssim_sim_per,
+                                    'are_similar': cssim_are_sim, 'threshold': cssim_threshold}
+            sample_data_list.append(sample_dict)
+        data['sample'] = sample_data_list
+
         print(data)
         return data
