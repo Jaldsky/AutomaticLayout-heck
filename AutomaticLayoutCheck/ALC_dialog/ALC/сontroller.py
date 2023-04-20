@@ -5,7 +5,7 @@ from ALC_dialog.ALC.selenium_helper import SeleniumHelper
 from ALC_dialog.ALC.image_helper import ImageHelper, PIC_NAME
 from typing import List, Union, Tuple
 from shutil import copy
-from ALC_dialog.ALC.comparator import ComparatorMeanSquaredError, ComparatorStructuralSimilarityIndex
+from ALC_dialog.ALC.comparator import ComparatorMeanSquaredError, ComparatorStructuralSimilarityIndex, ComparatorNeuralNetworkVGG16
 
 
 POSSIBLE_ARCHIVE_FORMATS = ['zip', 'rar']
@@ -104,23 +104,30 @@ class Controller(object):
 
             cmse = ComparatorMeanSquaredError(reference_sample_path, new_file_path)
             cssim = ComparatorStructuralSimilarityIndex(reference_sample_path, new_file_path)
+            vgg16 = ComparatorNeuralNetworkVGG16(reference_sample_path, new_file_path)
 
             cmse_sim_per = round(cmse.get_similarity_percentages, 2)
             cssim_sim_per = round(cssim.get_similarity_percentages, 2)
+            vgg16_sim_per = round(vgg16.get_similarity_percentages, 2)
 
             cmse_sim_index = round(cmse.get_similarity_index, 2)
             cssim_sim_index = round(cssim.get_similarity_index, 2)
+            vgg16_sim_index = round(vgg16.get_similarity_index, 2)
 
             cmse_are_sim = cmse.are_images_similar
             cssim_are_sim = cssim.are_images_similar
+            vgg16_are_sim = vgg16.are_images_similar
 
             cmse_threshold = cmse.get_threshold
             cssim_threshold = cssim.get_threshold
+            vgg16_threshold = vgg16.get_threshold
 
             sample_dict['CMSE'] = {'index': cmse_sim_index, 'similarity_percentage': cmse_sim_per,
                                    'are_similar': cmse_are_sim, 'threshold': cmse_threshold}
             sample_dict['CSSIM'] = {'index': cssim_sim_index, 'similarity_percentage': cssim_sim_per,
                                     'are_similar': cssim_are_sim, 'threshold': cssim_threshold}
+            sample_dict['VGG16'] = {'index': vgg16_sim_index, 'similarity_percentage': vgg16_sim_per,
+                                    'are_similar': vgg16_are_sim, 'threshold': vgg16_threshold}
             sample_data_list.append(sample_dict)
         data['sample'] = sample_data_list
 

@@ -60,10 +60,10 @@
                                 <td>{{ data.CSSIM.are_similar }} при пороге >={{ data.CSSIM.threshold }}</td>
                             </tr>
                             <tr>
-                                <td>Нейронка</td>
-                                <td>x</td>
-                                <td>x</td>
-                                <td>x</td>
+                                <td>Нейросеть VGG16</td>
+                                <td>{{ data.VGG16.index }}</td>
+                                <td>{{ data.VGG16.similarity_percentage }}</td>
+                                <td>{{ data.VGG16.are_similar }} при пороге >={{ data.VGG16.threshold }}</td>
                             </tr>
                         </tbody>
                     </table>
