@@ -33,6 +33,7 @@
             </div>
         </div>
 
+        {% if 'CMSE' in data or 'CSSIM' in data or 'VGG16' in data %}
         <div class="small-block">
             {% for data in sample %}
                 <div class="results-block">
@@ -47,28 +48,37 @@
                                 <th>Процент схожести</th>
                                 <th>Похожи ли изображения</th>
                             </tr>
-                            <tr>
-                                <td>Среднеквадратическая ошибка</td>
-                                <td>{{ data.CMSE.index }}</td>
-                                <td>{{ data.CMSE.similarity_percentage }}</td>
-                                <td>{{ data.CMSE.are_similar }} при пороге <={{ data.CMSE.threshold }}</td>
-                            </tr>
-                            <tr>
-                                <td>Индекс среднего структурного сходства</td>
-                                <td>{{ data.CSSIM.index }}</td>
-                                <td>{{ data.CSSIM.similarity_percentage }}</td>
-                                <td>{{ data.CSSIM.are_similar }} при пороге >={{ data.CSSIM.threshold }}</td>
-                            </tr>
-                            <tr>
-                                <td>Нейросеть VGG16</td>
-                                <td>{{ data.VGG16.index }}</td>
-                                <td>{{ data.VGG16.similarity_percentage }}</td>
-                                <td>{{ data.VGG16.are_similar }} при пороге >={{ data.VGG16.threshold }}</td>
-                            </tr>
+                            {% if 'CMSE' in data %}
+                                <tr>
+                                    <td>Среднеквадратическая ошибка</td>
+                                    <td>{{ data.CMSE.index }}</td>
+                                    <td>{{ data.CMSE.similarity_percentage }}</td>
+                                    <td>{{ data.CMSE.are_similar }} при пороге <={{ data.CMSE.threshold }}</td>
+                                </tr>
+                            {% endif %}
+
+                            {% if 'CSSIM' in data %}
+                                <tr>
+                                    <td>Индекс среднего структурного сходства</td>
+                                    <td>{{ data.CSSIM.index }}</td>
+                                    <td>{{ data.CSSIM.similarity_percentage }}</td>
+                                    <td>{{ data.CSSIM.are_similar }} при пороге >={{ data.CSSIM.threshold }}</td>
+                                </tr>
+                            {% endif %}
+
+                            {% if 'VGG16' in data %}
+                                <tr>
+                                    <td>Нейросеть VGG16</td>
+                                    <td>{{ data.VGG16.index }}</td>
+                                    <td>{{ data.VGG16.similarity_percentage }}</td>
+                                    <td>{{ data.VGG16.are_similar }} при пороге >={{ data.VGG16.threshold }}</td>
+                                </tr>
+                            {% endif %}
                         </tbody>
                     </table>
                 </div>
             {% endfor %}
+        {% endif %}
         </div>
         </form>
 

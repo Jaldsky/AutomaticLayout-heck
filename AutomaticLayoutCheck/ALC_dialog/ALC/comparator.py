@@ -106,8 +106,8 @@ class ComparatorBase:
 class ComparatorMeanSquaredError(ComparatorBase):
     """Класс для сравнения схожести двух изображений по методу среднеквадратичной ошибки (Mean Squared Error - MSE)."""
 
-    def __init__(self, reference_img_path: str, sample_img_path: str,
-                 img_size: Tuple = (500, 500), threshold: float = 60) -> None:
+    def __init__(self, reference_img_path: str, sample_img_path: str, img_size: Tuple = (500, 500),
+                 threshold: float = 60) -> None:
         """Инициализация класса.
 
         Args:
@@ -116,6 +116,7 @@ class ComparatorMeanSquaredError(ComparatorBase):
             img_size: размер изображения.
             threshold: попрог определения схожести изображений.
         """
+        super().__init__()
         self.reference_img_path = reference_img_path
         self.sample_img_path = sample_img_path
         self.img_size = img_size

@@ -5,7 +5,10 @@ from ALC_dialog.ALC.selenium_helper import SeleniumHelper
 from ALC_dialog.ALC.image_helper import ImageHelper, PIC_NAME
 from typing import List, Union, Tuple
 from shutil import copy
-from ALC_dialog.ALC.comparator import ComparatorMeanSquaredError, ComparatorStructuralSimilarityIndex, ComparatorNeuralNetworkVGG16
+from ALC_dialog.ALC.comparator import ComparatorMeanSquaredError, \
+    ComparatorStructuralSimilarityIndex, ComparatorNeuralNetworkVGG16
+from AutomaticLayoutCheck.settings import ENABLE_BEDAUB_TEXT, ENABLE_MSE_COMPARATOR, \
+    ENABLE_SSIM_COMPARATOR, ENABLE_VGG16_COMPARATOR
 
 
 POSSIBLE_ARCHIVE_FORMATS = ['zip', 'rar']
@@ -77,6 +80,8 @@ class Controller(object):
 
         image_helper = ImageHelper()
         reference_sample = image_helper.convert_psd_to_png(sample_pic_path, folder_path)
+        if ENABLE_BEDAUB_TEXT:
+            reference_sample = image_helper.bedaub_text(reference_sample, reference_sample)
         img_width, img_height = image_helper.get_image_resolution(reference_sample)
 
         site_folders_paths = self.unzip(site_path)
@@ -99,35 +104,39 @@ class Controller(object):
             new_file_path = path.join(self.DISPLAY_IMAGES_PATH, new_file_nam1e)
             self.rename_file(current_file_path, new_file_path)
 
+            if ENABLE_BEDAUB_TEXT:
+                new_file_path = image_helper.bedaub_text(new_file_path, new_file_path)
+
             sample_dict['name'] = new_file_nam1e
             sample_dict['path'] = new_file_path
 
-            cmse = ComparatorMeanSquaredError(reference_sample_path, new_file_path)
-            cssim = ComparatorStructuralSimilarityIndex(reference_sample_path, new_file_path)
-            vgg16 = ComparatorNeuralNetworkVGG16(reference_sample_path, new_file_path)
+            if ENABLE_MSE_COMPARATOR:
+                cmse = ComparatorMeanSquaredError(reference_sample_path, new_file_path)
+                cmse_sim_per = round(cmse.get_similarity_percentages, 2)
+                cmse_sim_index = round(cmse.get_similarity_index, 2)
+                cmse_are_sim = cmse.are_images_similar
+                cmse_threshold = cmse.get_threshold
 
-            cmse_sim_per = round(cmse.get_similarity_percentages, 2)
-            cssim_sim_per = round(cssim.get_similarity_percentages, 2)
-            vgg16_sim_per = round(vgg16.get_similarity_percentages, 2)
+                sample_dict['CMSE'] = {'index': cmse_sim_index, 'similarity_percentage': cmse_sim_per,
+                                       'are_similar': cmse_are_sim, 'threshold': cmse_threshold}
+            if ENABLE_SSIM_COMPARATOR:
+                cssim = ComparatorStructuralSimilarityIndex(reference_sample_path, new_file_path)
+                cssim_sim_per = round(cssim.get_similarity_percentages, 2)
+                cssim_sim_index = round(cssim.get_similarity_index, 2)
+                cssim_are_sim = cssim.are_images_similar
+                cssim_threshold = cssim.get_threshold
 
-            cmse_sim_index = round(cmse.get_similarity_index, 2)
-            cssim_sim_index = round(cssim.get_similarity_index, 2)
-            vgg16_sim_index = round(vgg16.get_similarity_index, 2)
+                sample_dict['CSSIM'] = {'index': cssim_sim_index, 'similarity_percentage': cssim_sim_per,
+                                        'are_similar': cssim_are_sim, 'threshold': cssim_threshold}
+            if ENABLE_VGG16_COMPARATOR:
+                cvgg16 = ComparatorNeuralNetworkVGG16(reference_sample_path, new_file_path)
+                vgg16_sim_per = round(cvgg16.get_similarity_percentages, 2)
+                vgg16_sim_index = round(cvgg16.get_similarity_index, 2)
+                vgg16_are_sim = cvgg16.are_images_similar
+                cvgg16_threshold = cvgg16.get_threshold
+                sample_dict['VGG16'] = {'index': vgg16_sim_index, 'similarity_percentage': vgg16_sim_per,
+                                        'are_similar': vgg16_are_sim, 'threshold': cvgg16_threshold}
 
-            cmse_are_sim = cmse.are_images_similar
-            cssim_are_sim = cssim.are_images_similar
-            vgg16_are_sim = vgg16.are_images_similar
-
-            cmse_threshold = cmse.get_threshold
-            cssim_threshold = cssim.get_threshold
-            vgg16_threshold = vgg16.get_threshold
-
-            sample_dict['CMSE'] = {'index': cmse_sim_index, 'similarity_percentage': cmse_sim_per,
-                                   'are_similar': cmse_are_sim, 'threshold': cmse_threshold}
-            sample_dict['CSSIM'] = {'index': cssim_sim_index, 'similarity_percentage': cssim_sim_per,
-                                    'are_similar': cssim_are_sim, 'threshold': cssim_threshold}
-            sample_dict['VGG16'] = {'index': vgg16_sim_index, 'similarity_percentage': vgg16_sim_per,
-                                    'are_similar': vgg16_are_sim, 'threshold': vgg16_threshold}
             sample_data_list.append(sample_dict)
         data['sample'] = sample_data_list
 
