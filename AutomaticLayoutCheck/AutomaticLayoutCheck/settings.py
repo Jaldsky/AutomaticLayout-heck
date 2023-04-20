@@ -2,6 +2,13 @@ from pathlib import Path
 from os import path, getcwd
 
 
+ENABLE_BEDAUB_TEXT = True
+
+ENABLE_MSE_COMPARATOR = True
+ENABLE_SSIM_COMPARATOR = True
+ENABLE_VGG16_COMPARATOR = True
+
+
 UPLOADS_FILES_PATH = 'results/uploads'
 
 BASE_DIR = Path(__file__).resolve().parent.parent
