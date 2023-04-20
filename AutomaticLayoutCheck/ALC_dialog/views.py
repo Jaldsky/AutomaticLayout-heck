@@ -51,8 +51,8 @@ def execute(request: WSGIRequest) -> None:
             data['file_extension'] = file_extension
             data['file_path'] = _move_uploaded_files(uploaded_file.file.path, folder_path)
             files_data.append(data)
-        imgs_path = Controller().exec(files_data, folder_path)
-        return render(request, 'index.html', imgs_path)
+        data = Controller().exec(files_data, folder_path)
+        return render(request, 'index.html', data)
     else:
         form = FileUploadForm()
     return render(request, 'index.html', {'form': form})
