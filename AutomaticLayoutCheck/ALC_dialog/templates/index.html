@@ -34,31 +34,41 @@
         </div>
 
         <div class="small-block">
-            <div class="results-block">
-                <table class="table">
-                    <tbody>
-                        <tr class="">
-                            <th colspan="2">Сравниваемое изображение 1</th>
-                        </tr>
-                        <tr>
-                            <th>Метод сравнения</th>
-                            <th>Результат сравнения</th>
-                        </tr>
-                        <tr>
-                            <td>Среднеквадратическая ошибка</td>
-                            <td>x</td>
-                        </tr>
-                        <tr>
-                            <td>Индекс среднего структурного сходства</td>
-                            <td>x</td>
-                        </tr>
-                        <tr>
-                            <td>Нейронка</td>
-                            <td>x</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            {% for data in sample %}
+                <div class="results-block">
+                    <table class="table">
+                        <tbody>
+                            <tr class="">
+                                <th colspan="4">Сравниваемое изображение {{ forloop.counter }}</th>
+                            </tr>
+                            <tr>
+                                <th>Метод сравнения</th>
+                                <th>Индекс сравнения</th>
+                                <th>Процент схожести</th>
+                                <th>Похожи ли изображения</th>
+                            </tr>
+                            <tr>
+                                <td>Среднеквадратическая ошибка</td>
+                                <td>{{ data.CMSE.index }}</td>
+                                <td>{{ data.CMSE.similarity_percentage }}</td>
+                                <td>{{ data.CMSE.are_similar }} при пороге <={{ data.CMSE.threshold }}</td>
+                            </tr>
+                            <tr>
+                                <td>Индекс среднего структурного сходства</td>
+                                <td>{{ data.CSSIM.index }}</td>
+                                <td>{{ data.CSSIM.similarity_percentage }}</td>
+                                <td>{{ data.CSSIM.are_similar }} при пороге >={{ data.CSSIM.threshold }}</td>
+                            </tr>
+                            <tr>
+                                <td>Нейронка</td>
+                                <td>x</td>
+                                <td>x</td>
+                                <td>x</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            {% endfor %}
         </div>
         </form>
 
@@ -69,12 +79,13 @@
                     <img src="{% static reference_sample %}" alt="Uploaded Image">
                 </div>
             {% endif %}
+
             {% if sample %}
                 <div class="image-block">
-                    {% for img in sample.values %}
+                    {% for data in sample %}
                         <div>
                             <label id="pic_title">Сравниваемое изображение {{ forloop.counter }}</label>
-                            <img src="{% static img %}" alt="Uploaded Image">
+                            <img src="{% static data.path %}" alt="Uploaded Image">
                         </div>
                     {% endfor %}
                 </div>
