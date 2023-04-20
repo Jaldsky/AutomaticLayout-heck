@@ -7,9 +7,24 @@ import numpy as np
 class ComparatorBase:
     """Базовый класс для сравнения схожести двух изображений."""
 
+    def __init__(self):
+        self.threshold = None
+
+    def compare_exec(self, *args):
+        """Выполнить сравнение схожести двух изображений."""
+        pass
+
+    def get_similarity_percentages(self):
+        """Получить процент схожести двух изображений."""
+        pass
+
+    def are_images_similar(self):
+        """Функция проверки схожести изображений."""
+        pass
+
     @staticmethod
     def imread_image(img_path: str) -> np.ndarray:
-        """Считать изображение.
+        """Считать цветное изображение.
 
         Args:
             img_path: путь до изображения.
@@ -20,7 +35,8 @@ class ComparatorBase:
         img = imread(img_path)
         return cvtColor(img, COLOR_BGR2RGB)
 
-    def resize_image(self, img_array: np.ndarray, size: Tuple[int, int]):
+    @staticmethod
+    def resize_image(img_array: np.ndarray, size: Tuple[int, int]):
         """Изменить размер изображения.
 
         Args:
@@ -32,29 +48,59 @@ class ComparatorBase:
         """
         return resize(img_array, size)
 
-    def compare_exec(self, *args):
-        """Выполнить сравнение схожести двух изображений."""
-        pass
+    @staticmethod
+    def convert_image_to_grayscale(img_array: np.ndarray,) -> np.ndarray:
+        """Перевести цветное изображение в оттенки серого.
 
-    def are_images_similar(self):
-        """Похожи ли два изображения."""
-        pass
+        Args:
+            img_array: изображение в виде массива.
 
-    def get_similarity_percentages(self):
-        """Получить процент схожести изображений."""
-        pass
+        Returns:
+            Изображение в виде массива с переведенным в градации серого цветами.
+        """
+        return cvtColor(img_array, COLOR_BGR2GRAY)
+
+    @property
+    def get_similarity_index(self):
+        """Получить индекс схожести двух изображений.
+
+        Returns:
+            Схожесть двух изображений в процентах."""
+        return self.compare_exec
+
+    def prepare_image(self, img_path: str, img_size: Tuple[int, int]) -> np.ndarray:
+        """Подготовить изображение для сравнения: представить изображение в виде массива,
+        изменить размер изображения, перевести в градации серого.
+
+        Args:
+            img_path: путь до изображения.
+            img_size: размер изображения.
+
+        Returns:
+            Обесцвеченное с измененным размером, представленное в виде массива изображение.
+        """
+        # Read a color image and represent it as an array
+        img = self.imread_image(img_path)
+
+        # Present images in the same size
+        img = self.resize_image(img, img_size)
+
+        # Convert the images to grayscale
+        img = self.convert_image_to_grayscale(img)
+        return img
 
 
 class ComparatorMeanSquaredError(ComparatorBase):
     """Класс для сравнения схожести двух изображений по методу среднеквадратичной ошибки (Mean Squared Error - MSE)."""
 
     def __init__(self, reference_img_path: str, sample_img_path: str,
-                 img_size: Tuple = (500, 500), threshold: float = 96.25) -> None:
+                 img_size: Tuple = (500, 500), threshold: float = 60) -> None:
         """Инициализация класса.
 
         Args:
             reference_img_path: путь до эталонного изображения.
             sample_img_path: путь до сравниваемого изображения.
+            img_size: размер изображения.
             threshold: попрог определения схожести изображений.
         """
         self.reference_img_path = reference_img_path
@@ -70,19 +116,22 @@ class ComparatorMeanSquaredError(ComparatorBase):
             True - похожи, False - не похожи.
         """
         nrmse = self.compare_exec
-        if nrmse <= self.threshold:
+        if nrmse >= self.threshold:
             return False
         else:
             return True
 
     @property
     def get_similarity_percentages(self) -> float:
-        """Получить процент схожести изображений.
+        """Получить процент схожести двух изображений.
 
         Returns:
-            Процент схожести.
+            Процент схожести двух изображений.
         """
-        return self.compare_exec
+        mse = self.compare_exec
+        max_pixel_value = 255  # grayscale image
+        similarity_percentage = ((max_pixel_value ** 2) - mse) / (max_pixel_value ** 2) * 100
+        return similarity_percentage
 
     @property
     def compare_exec(self) -> float:
@@ -91,30 +140,20 @@ class ComparatorMeanSquaredError(ComparatorBase):
         Returns:
             Схожесть двух изображений в процентах.
         """
-        reference_img = self.imread_image(self.reference_img_path)
-        sample_img = self.imread_image(self.sample_img_path)
-
-        reference_img = self.resize_image(reference_img, self.img_size)
-        sample_img = self.resize_image(sample_img, self.img_size)
+        reference_img = self.prepare_image(self.reference_img_path, self.img_size)
+        sample_img = self.prepare_image(self.sample_img_path, self.img_size)
 
         # calculate the root mean square error (RMSE)
         mse = np.mean((reference_img - sample_img) ** 2)
-        rmse = np.sqrt(mse)
-
-        # calculate the maximum pixel value of the images
-        max_pixel_val = np.iinfo(reference_img.dtype).max
-
-        # calculate the normalized root mean square error (NRMSE)
-        nrmse = (rmse / max_pixel_val) * 100
-        return 100 - nrmse
+        return mse
 
 
 class ComparatorStructuralSimilarityIndex(ComparatorBase):
     """Класс для сравнения схожести двух изображений по методу
     индексу структурного подобия (Structural Similarity Index - SSIM)."""
 
-    def __init__(self, reference_img_path: str, sample_img_path: str,
-                 img_size: Tuple = (500, 500), threshold: float = 45.5) -> None:
+    def __init__(self, reference_img_path: str, sample_img_path: str, img_size: Tuple = (500, 500),
+                 threshold: float = 0.5) -> None:
         """Инициализация класса.
 
         Args:
@@ -122,6 +161,7 @@ class ComparatorStructuralSimilarityIndex(ComparatorBase):
             sample_img_path: путь до сравниваемого изображения.
             threshold: попрог определения схожести изображений.
         """
+        super().__init__()
         self.reference_img_path = reference_img_path
         self.sample_img_path = sample_img_path
         self.img_size = img_size
@@ -147,7 +187,9 @@ class ComparatorStructuralSimilarityIndex(ComparatorBase):
         Returns:
             Процент схожести.
         """
-        return self.compare_exec
+        ssim = self.compare_exec
+        similarity_percentage = (ssim + 1) * 50
+        return similarity_percentage
 
     @property
     def compare_exec(self) -> float:
@@ -156,16 +198,9 @@ class ComparatorStructuralSimilarityIndex(ComparatorBase):
         Returns:
             Схожесть двух изображений в процентах.
         """
-        reference_img = self.imread_image(self.reference_img_path)
-        sample_img = self.imread_image(self.sample_img_path)
-
-        reference_img = self.resize_image(reference_img, self.img_size)
-        sample_img = self.resize_image(sample_img, self.img_size)
-
-        # Convert the images to grayscale
-        gray_reference_img = cvtColor(reference_img, COLOR_BGR2GRAY)
-        gray_sample_img = cvtColor(sample_img, COLOR_BGR2GRAY)
+        reference_img = self.prepare_image(self.reference_img_path, self.img_size)
+        sample_img = self.prepare_image(self.sample_img_path, self.img_size)
 
         # Calculate the SSIM score
-        ssim_score = structural_similarity(gray_reference_img, gray_sample_img)
-        return ssim_score * 100
+        ssim_score = structural_similarity(reference_img, sample_img)
+        return ssim_score
