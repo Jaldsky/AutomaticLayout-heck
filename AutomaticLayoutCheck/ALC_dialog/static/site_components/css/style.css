@@ -12,7 +12,9 @@ img {
 	height: 100%;
 }
 
-
+span {
+	padding-right: 3px;
+}
 
 /* Container */
 
@@ -29,6 +31,7 @@ img {
 
 /* Blocks */
 .title-block,
+.settings-block,
 .upper-block,
 .small-block,
 .large-block,
@@ -38,6 +41,7 @@ img {
 }
 
 .title-block,
+.settings-block,
 .upper-block {
 	align-items: center;
 	justify-content: center;
@@ -47,6 +51,12 @@ img {
 	margin-bottom: 10px;
 	box-shadow: 0 0 10px rgba(0,0,0,0.1);
 	color: #fff;
+}
+
+.settings-block {
+	font-size: 14px;
+	text-align: center;
+	padding:20px;
 }
 
 .upper-block {
@@ -109,6 +119,11 @@ img {
 	border-radius: 10px;
 }
 
+.settings-menu {
+	display: inline-flex;
+	margin:5px;
+}
+
 .file-upload input[type="file"] {
     position: absolute;
     top: 0;
@@ -128,6 +143,52 @@ img {
 .execute-button {
 	padding: 0px;
 	margin-left: 40px;
+}
+
+/* Switcher */
+.switcher {
+  position: relative;
+  display: inline-block;
+  width: 30px;
+  height: 16px;
+}
+
+.switcher input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.switcher label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: grey;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.switcher label:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 1px;
+  bottom: 1px;
+  background-color: white;
+  border-radius: 50%;
+  transition: transform 0.2s ease-in-out;
+}
+
+.switcher input:checked + label {
+  background-color: #2196F3;
+}
+
+.switcher input:checked + label:before {
+  transform: translateX(14px);
 }
 
 /* Table */

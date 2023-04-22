@@ -14,8 +14,45 @@
 			<h1>Automatic Layout Checker</h1>
 		</div>
 
-        <form method="post" enctype="multipart/form-data">
+        <form method="post">
             {% csrf_token %}
+            <div class="settings-block">
+                <div class="settings-menu">
+                    <span>Закраска текста</span>
+                    <div class="switcher">
+                        <input type="checkbox" id="bedaub_text" name="bedaub_text"/>
+                        <label for="bedaub_text"></label>
+                    </div>
+                </div>
+                <div class="settings-menu">
+                    <span>Очистка локального кеша</span>
+                    <div class="switcher">
+                        <input type="checkbox" id="clear_local_cache" name="clear_local_cache" checked/>
+                        <label for="clear_local_cache"></label>
+                    </div>
+                </div>
+                <div class="settings-menu">
+                    <span>Среднеквадратическая ошибка</span>
+                    <div class="switcher">
+                        <input type="checkbox" id="mse_comparator" name="mse_comparator" checked/>
+                        <label for="mse_comparator"></label>
+                    </div>
+                </div>
+                <div class="settings-menu">
+                    <span>Индекс среднего структурного сходства</span>
+                    <div class="switcher">
+                        <input type="checkbox" id="ssim_comparator" name="ssim_comparator" checked/>
+                        <label for="ssim_comparator"></label>
+                    </div>
+                </div>
+			<div class="settings-menu">
+				<span>Нейросеть VGG16</span>
+				<div class="switcher">
+					<input type="checkbox" id="vgg16_comparator" name="vgg16_comparator" checked/>
+					<label for="vgg16_comparator"></label>
+				</div>
+			</div>
+		</div>
 
         <div class="upper-block">
             <div id="menu">
@@ -33,9 +70,9 @@
             </div>
         </div>
 
-        {% if 'CMSE' in data or 'CSSIM' in data or 'VGG16' in data %}
-        <div class="small-block">
-            {% for data in sample %}
+        {% for data in sample %}
+            {% if 'CMSE' in data or 'CSSIM' in data or 'VGG16' in data%}
+            <div class="small-block">
                 <div class="results-block">
                     <table class="table">
                         <tbody>
@@ -77,9 +114,9 @@
                         </tbody>
                     </table>
                 </div>
-            {% endfor %}
-        {% endif %}
-        </div>
+            </div>
+            {% endif %}
+        {% endfor %}
         </form>
 
 		<div class="large-block">
