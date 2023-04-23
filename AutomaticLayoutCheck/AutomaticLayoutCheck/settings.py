@@ -2,14 +2,6 @@ from pathlib import Path
 from os import path, getcwd
 
 
-ENABLE_BEDAUB_TEXT = False
-ENABLE_CLEAR_LOCAL_CACHE = True
-
-ENABLE_MSE_COMPARATOR = True
-ENABLE_SSIM_COMPARATOR = True
-ENABLE_VGG16_COMPARATOR = True
-
-
 UPLOADS_FILES_PATH = 'results/uploads'
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -75,10 +67,9 @@ WSGI_APPLICATION = 'AutomaticLayoutCheck.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': path.join(BASE_DIR, 'db', 'db.sqlite3'),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
