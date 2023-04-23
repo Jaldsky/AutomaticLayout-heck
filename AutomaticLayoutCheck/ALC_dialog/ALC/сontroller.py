@@ -1,14 +1,18 @@
-from os import path, getcwd, scandir, pardir, listdir, unlink, rename
-from pyunpack import Archive
+from typing import Dict, List, Tuple
+from os import path, getcwd, scandir, listdir, unlink, rename
+from shutil import copy
 import logging
+
+from pyunpack import Archive
+
+from ALC_dialog.models import ProjectSettings
+
 from ALC_dialog.ALC.selenium_helper import SeleniumHelper
 from ALC_dialog.ALC.image_helper import ImageHelper, PIC_NAME
-from typing import List, Union, Tuple
-from shutil import copy
-from ALC_dialog.ALC.comparator import ComparatorMeanSquaredError, \
-    ComparatorStructuralSimilarityIndex, ComparatorNeuralNetworkVGG16
-from AutomaticLayoutCheck.settings import ENABLE_BEDAUB_TEXT, ENABLE_MSE_COMPARATOR, \
-    ENABLE_SSIM_COMPARATOR, ENABLE_VGG16_COMPARATOR
+
+
+from ALC_dialog.ALC.comparator import ComparatorMeanSquaredError, ComparatorStructuralSimilarityIndex, \
+    ComparatorNeuralNetworkVGG16
 
 
 POSSIBLE_ARCHIVE_FORMATS = ['zip', 'rar']
@@ -17,11 +21,20 @@ POSSIBLE_PIC_FORMATS = ['psd']
 logger = logging.getLogger(__name__)
 
 
-class Controller(object):
+class Controller:
+    """Класс для контроля выполнения проверки схожести двух изображений."""
     DISPLAY_IMAGES_PATH = path.join(getcwd(), 'ALC_dialog', 'static', 'imgs')
 
     @staticmethod
     def unzip(site_path: str) -> List:
+        """Функция для распаковки архива сайта.
+
+        Args:
+            site_path: путь до архива.
+
+        Returns:
+            Список путей с указанием расположения распакованных сайтов.
+        """
         file_name = str(site_path).split('\\')[-1]
         save_path = str(site_path).replace(file_name, '')
         Archive(site_path).extractall(save_path)
@@ -30,6 +43,11 @@ class Controller(object):
 
     @staticmethod
     def delete_all_files_in_directory(dir_path: str) -> None:
+        """Функция для удаления всех файлов в директории.
+
+        Args:
+            dir_path: путь до директории.
+        """
         for file in listdir(dir_path):
             file_path = path.join(dir_path, file)
             try:
@@ -40,6 +58,12 @@ class Controller(object):
 
     @staticmethod
     def copy_file(source_path: str, dest_path: str) -> None:
+        """Функция для копирования файлов.
+
+        Args:
+            source_path: путь до файла, который необходимо скопировать.
+            dest_path: путь до файла для сохранения.
+        """
         try:
             copy(source_path, dest_path)
             logger.error(f"{source_path} was copied to {dest_path} successfully")
@@ -49,15 +73,29 @@ class Controller(object):
             logger.error("Error: Failed to copy file - %s", e.args)
 
     @staticmethod
-    def rename_file(old_name, new_name):
+    def rename_file(old_name_path: str, new_name_path: str) -> None:
+        """Функция для переименования файла.
+
+        Args:
+            old_name_path: путь до файла для переименования.
+            new_name_path: пусть до сохранения переименованного файла.
+        """
         try:
-            rename(old_name, new_name)
-            logger.error(f"{old_name} has been renamed to {new_name}")
+            rename(old_name_path, new_name_path)
+            logger.error(f"{old_name_path} has been renamed to {new_name_path}")
         except OSError as e:
             logger.error(f"Error: {e}")
 
     @staticmethod
-    def get_site_pic_paths(files_data) -> Tuple[str, str]:
+    def get_site_pic_paths(files_data: List) -> Tuple[str, str]:
+        """Функция для получения пути до эталонного изображения и архива с сайтами.
+
+        Args:
+            files_data: список с путями.
+
+        Returns:
+            Кортеж с путем до эталонного изображения и архива с сайтами.
+        """
         site_path = str()
         sample_pic_path = str()
 
@@ -75,12 +113,21 @@ class Controller(object):
         else:
             logger.error('Added more than two files')
 
-    def exec(self, files_data, folder_path: str):
+    def exec(self, files_data: List, folder_path: str) -> Dict:
+        """Функция для выполнения основной логики класса.
+
+        Args:
+            files_data: список с путями.
+            folder_path: путь до папки сохранения кеша.
+
+        Returns:
+            Словарь с парамметрами для html шаблона.
+        """
         site_path, sample_pic_path = self.get_site_pic_paths(files_data)
 
         image_helper = ImageHelper()
         reference_sample = image_helper.convert_psd_to_png(sample_pic_path, folder_path)
-        if ENABLE_BEDAUB_TEXT:
+        if ProjectSettings.objects.get().bedaub_text:
             reference_sample = image_helper.bedaub_text(reference_sample, reference_sample)
         img_width, img_height = image_helper.get_image_resolution(reference_sample)
 
@@ -104,13 +151,13 @@ class Controller(object):
             new_file_path = path.join(self.DISPLAY_IMAGES_PATH, new_file_nam1e)
             self.rename_file(current_file_path, new_file_path)
 
-            if ENABLE_BEDAUB_TEXT:
+            if ProjectSettings.objects.get().bedaub_text:
                 new_file_path = image_helper.bedaub_text(new_file_path, new_file_path)
 
             sample_dict['name'] = new_file_nam1e
             sample_dict['path'] = new_file_path
 
-            if ENABLE_MSE_COMPARATOR:
+            if ProjectSettings.objects.get().mse_comparator:
                 cmse = ComparatorMeanSquaredError(reference_sample_path, new_file_path)
                 cmse_sim_per = round(cmse.get_similarity_percentages, 2)
                 cmse_sim_index = round(cmse.get_similarity_index, 2)
@@ -119,7 +166,7 @@ class Controller(object):
 
                 sample_dict['CMSE'] = {'index': cmse_sim_index, 'similarity_percentage': cmse_sim_per,
                                        'are_similar': cmse_are_sim, 'threshold': cmse_threshold}
-            if ENABLE_SSIM_COMPARATOR:
+            if ProjectSettings.objects.get().ssim_comparator:
                 cssim = ComparatorStructuralSimilarityIndex(reference_sample_path, new_file_path)
                 cssim_sim_per = round(cssim.get_similarity_percentages, 2)
                 cssim_sim_index = round(cssim.get_similarity_index, 2)
@@ -128,7 +175,7 @@ class Controller(object):
 
                 sample_dict['CSSIM'] = {'index': cssim_sim_index, 'similarity_percentage': cssim_sim_per,
                                         'are_similar': cssim_are_sim, 'threshold': cssim_threshold}
-            if ENABLE_VGG16_COMPARATOR:
+            if ProjectSettings.objects.get().vgg16_comparator:
                 cvgg16 = ComparatorNeuralNetworkVGG16(reference_sample_path, new_file_path)
                 vgg16_sim_per = round(cvgg16.get_similarity_percentages, 2)
                 vgg16_sim_index = round(cvgg16.get_similarity_index, 2)
@@ -139,6 +186,4 @@ class Controller(object):
 
             sample_data_list.append(sample_dict)
         data['sample'] = sample_data_list
-
-        print(data)
         return data
