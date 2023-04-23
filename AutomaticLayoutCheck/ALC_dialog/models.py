@@ -11,6 +11,7 @@ class UploadedFile(models.Model):
     name = models.CharField(max_length=255, default=None)
     type = models.CharField(max_length=10, default=None)
     upload_to = ""
+    upload_data = models.DateTimeField(auto_now=True)
 
     def save_file(self, file):
         self.file.save(file.name, file, save=True)
