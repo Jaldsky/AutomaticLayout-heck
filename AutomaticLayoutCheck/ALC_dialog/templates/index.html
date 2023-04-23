@@ -14,41 +14,41 @@
 			<h1>Automatic Layout Checker</h1>
 		</div>
 
-        <form method="post">
+        <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="settings-block">
                 <div class="settings-menu">
                     <span>Закраска текста</span>
                     <div class="switcher">
-                        <input type="checkbox" id="bedaub_text" name="bedaub_text"/>
+                        <input type="checkbox" id="bedaub_text" name="bedaub_text" {% if settings.bedaub_text %}checked{% endif %}/>
                         <label for="bedaub_text"></label>
                     </div>
                 </div>
                 <div class="settings-menu">
                     <span>Очистка локального кеша</span>
                     <div class="switcher">
-                        <input type="checkbox" id="clear_local_cache" name="clear_local_cache" checked/>
+                        <input type="checkbox" id="clear_local_cache" name="clear_local_cache" {% if settings.clear_local_cache %}checked{% endif %}/>
                         <label for="clear_local_cache"></label>
                     </div>
                 </div>
                 <div class="settings-menu">
-                    <span>Среднеквадратическая ошибка</span>
+                    <span>Среднеквадратичная ошибка</span>
                     <div class="switcher">
-                        <input type="checkbox" id="mse_comparator" name="mse_comparator" checked/>
+                        <input type="checkbox" id="mse_comparator" name="mse_comparator" {% if settings.mse_comparator %}checked{% endif %}/>
                         <label for="mse_comparator"></label>
                     </div>
                 </div>
                 <div class="settings-menu">
                     <span>Индекс среднего структурного сходства</span>
                     <div class="switcher">
-                        <input type="checkbox" id="ssim_comparator" name="ssim_comparator" checked/>
+                        <input type="checkbox" id="ssim_comparator" name="ssim_comparator" {% if settings.ssim_comparator %}checked{% endif %}/>
                         <label for="ssim_comparator"></label>
                     </div>
                 </div>
 			<div class="settings-menu">
 				<span>Нейросеть VGG16</span>
 				<div class="switcher">
-					<input type="checkbox" id="vgg16_comparator" name="vgg16_comparator" checked/>
+					<input type="checkbox" id="vgg16_comparator" name="vgg16_comparator" {% if settings.vgg16_comparator %}checked{% endif %}/>
 					<label for="vgg16_comparator"></label>
 				</div>
 			</div>
@@ -87,7 +87,7 @@
                             </tr>
                             {% if 'CMSE' in data %}
                                 <tr>
-                                    <td>Среднеквадратическая ошибка</td>
+                                    <td>Среднеквадратичная ошибка</td>
                                     <td>{{ data.CMSE.index }}</td>
                                     <td>{{ data.CMSE.similarity_percentage }}</td>
                                     <td>{{ data.CMSE.are_similar }} при пороге <={{ data.CMSE.threshold }}</td>
