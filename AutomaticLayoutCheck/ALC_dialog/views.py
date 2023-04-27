@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Union
 from os import path, getcwd, listdir, makedirs
 from shutil import rmtree, move
 
@@ -79,6 +79,32 @@ def _update_settings(params: Dict) -> Dict:
     return loads(str(project_settings))
 
 
+def upload_file_to_db(request: WSGIRequest, folder_path: str, upload_file_name: str) -> Union[Dict[str, str], None]:
+    """Функция для загрузки файла в базу данных.
+
+    Args:
+        request: запрос.
+        folder_path: путь до папки для хранения кеша.
+        upload_file_name: название файла.
+
+    Returns:
+        Словарь с сохраненными парамметрами.
+    """
+    file = request.FILES.get(upload_file_name, None)
+    if not file:
+        logger.error('File not found')
+        return None
+
+    file_extension = str(file).split('.')[-1]
+    file_name = str(file).replace(file_extension, '').strip('.')
+    uploaded_file = UploadedFile(name=file_name, type=file_extension)
+    uploaded_file.upload_to = folder_path
+    uploaded_file.save_file(file)
+
+    data = {'file_extension': file_extension, 'file_path': _move_uploaded_files(uploaded_file.file.path, folder_path)}
+    return data
+
+
 def execute(request: WSGIRequest) -> None:
     """Функция для выполнения основной логики.
 
@@ -87,23 +113,11 @@ def execute(request: WSGIRequest) -> None:
     """
     if request.method == 'POST':
         settings = _update_settings(request.POST)
-
         folder_path = _create_results_folder()
-        files_data = list()
-        for request_type in request.FILES.keys():
-            data = dict()
-            file = request.FILES[request_type]
-            file_extension = str(file).split('.')[-1]
-            file_name = str(file).replace(file_extension, '').strip('.')
-            uploaded_file = UploadedFile(name=file_name, type=file_extension)
-            uploaded_file.upload_to = folder_path
-            uploaded_file.save_file(file)
-
-            data['file_extension'] = file_extension
-            data['file_path'] = _move_uploaded_files(uploaded_file.file.path, folder_path)
-            files_data.append(data)
+        files_data = [upload_file_to_db(request, folder_path, 'pic'), upload_file_to_db(request, folder_path, 'zip')]
         data = Controller().exec(files_data, folder_path)
-        data['settings'] = settings
+        if data:
+            data['settings'] = settings
         if ProjectSettings.objects.get().clear_local_cache:
             _delete_dir(path.join(getcwd(), 'results'))
         return render(request, 'index.html', data)

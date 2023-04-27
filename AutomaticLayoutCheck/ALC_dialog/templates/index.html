@@ -70,9 +70,10 @@
             </div>
         </div>
 
+        <div class="small-block">
         {% for data in sample %}
             {% if 'CMSE' in data or 'CSSIM' in data or 'VGG16' in data%}
-            <div class="small-block">
+
                 <div class="results-block">
                     <table class="table">
                         <tbody>
@@ -114,9 +115,10 @@
                         </tbody>
                     </table>
                 </div>
-            </div>
+
             {% endif %}
         {% endfor %}
+        </div>
         </form>
 
 		<div class="large-block">

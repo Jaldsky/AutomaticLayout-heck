@@ -1,4 +1,4 @@
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Union
 from os import path, getcwd, scandir, listdir, unlink, rename
 from shutil import copy
 import logging
@@ -87,7 +87,7 @@ class Controller:
             logger.error(f"Error: {e}")
 
     @staticmethod
-    def get_site_pic_paths(files_data: List) -> Tuple[str, str]:
+    def get_site_pic_paths(files_data: List) -> Union[Tuple[str, str], None]:
         """Функция для получения пути до эталонного изображения и архива с сайтами.
 
         Args:
@@ -101,19 +101,20 @@ class Controller:
 
         if len(files_data) == 2:
             for elm in files_data:
+                if not elm:
+                    logger.error('Error uploading files, please make sure you are uploading the correct format')
+                    return None
                 if elm.get('file_extension') in POSSIBLE_ARCHIVE_FORMATS:
                     site_path = elm.get('file_path')
                 elif elm.get('file_extension') in POSSIBLE_PIC_FORMATS:
                     sample_pic_path = elm.get('file_path')
 
-            if site_path == '' or sample_pic_path == '':
-                logger.error('Error uploading files, please make sure you are uploading the correct format')
-
             return site_path, sample_pic_path
         else:
             logger.error('Added more than two files')
+            return None
 
-    def exec(self, files_data: List, folder_path: str) -> Dict:
+    def exec(self, files_data: List, folder_path: str) -> Union[Dict, None]:
         """Функция для выполнения основной логики класса.
 
         Args:
@@ -123,7 +124,11 @@ class Controller:
         Returns:
             Словарь с парамметрами для html шаблона.
         """
-        site_path, sample_pic_path = self.get_site_pic_paths(files_data)
+        site_pic_paths = self.get_site_pic_paths(files_data)
+        if not site_pic_paths:
+            return None
+
+        site_path, sample_pic_path = site_pic_paths
 
         image_helper = ImageHelper()
         reference_sample = image_helper.convert_psd_to_png(sample_pic_path, folder_path)
