@@ -1,4 +1,4 @@
-from typing import Dict, List, Tuple, Union
+from typing import Dict, List, Tuple, Optional
 from os import path, getcwd, scandir, listdir, unlink, rename
 from shutil import copy
 import logging
@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 class Controller:
     """Класс для контроля выполнения проверки схожести двух изображений."""
-    DISPLAY_IMAGES_PATH = path.join(getcwd(), 'ALC_dialog', 'static', 'imgs')
+    display_img_path = path.join(getcwd(), 'ALC_dialog', 'static', 'imgs')
 
     @staticmethod
     def unzip(site_path: str) -> List:
@@ -87,7 +87,7 @@ class Controller:
             logger.error(f"Error: {e}")
 
     @staticmethod
-    def get_site_pic_paths(files_data: List) -> Union[Tuple[str, str], None]:
+    def get_site_img_paths(files_data: List) -> Optional[Tuple[str, str]]:
         """Функция для получения пути до эталонного изображения и архива с сайтами.
 
         Args:
@@ -114,7 +114,7 @@ class Controller:
             logger.error('Added more than two files')
             return None
 
-    def exec(self, files_data: List, folder_path: str) -> Union[Dict, None]:
+    def exec(self, files_data: List, folder_path: str) -> Optional[Dict]:
         """Функция для выполнения основной логики класса.
 
         Args:
@@ -124,7 +124,7 @@ class Controller:
         Returns:
             Словарь с парамметрами для html шаблона.
         """
-        site_pic_paths = self.get_site_pic_paths(files_data)
+        site_pic_paths = self.get_site_img_paths(files_data)
         if not site_pic_paths:
             return None
 
@@ -138,10 +138,10 @@ class Controller:
 
         site_folders_paths = self.unzip(site_path)
 
-        self.delete_all_files_in_directory(self.DISPLAY_IMAGES_PATH)
-        self.copy_file(reference_sample, self.DISPLAY_IMAGES_PATH)
+        self.delete_all_files_in_directory(self.display_img_path)
+        self.copy_file(reference_sample, self.display_img_path)
 
-        reference_sample_path = path.join(self.DISPLAY_IMAGES_PATH, PIC_NAME)
+        reference_sample_path = path.join(self.display_img_path, PIC_NAME)
         data = {'reference_sample': reference_sample_path}
         sample_data_list = list()
         for num, site_folder_path in enumerate(site_folders_paths):  # there can be several sites in the archive
@@ -149,11 +149,11 @@ class Controller:
 
             index_path = path.join(site_folder_path, 'index.html')
             sample_path = SeleniumHelper(img_width, img_height).get_full_screenshot_page(index_path, folder_path)
-            self.copy_file(sample_path, self.DISPLAY_IMAGES_PATH)
+            self.copy_file(sample_path, self.display_img_path)
 
-            current_file_path = path.join(self.DISPLAY_IMAGES_PATH, 'sample.png')
+            current_file_path = path.join(self.display_img_path, 'sample.png')
             new_file_nam1e = f'sample_{num}.png'
-            new_file_path = path.join(self.DISPLAY_IMAGES_PATH, new_file_nam1e)
+            new_file_path = path.join(self.display_img_path, new_file_nam1e)
             self.rename_file(current_file_path, new_file_path)
 
             if ProjectSettings.objects.get().bedaub_text:

@@ -105,7 +105,7 @@ def upload_file_to_db(request: WSGIRequest, folder_path: str, upload_file_name: 
     return data
 
 
-def execute(request: WSGIRequest) -> None:
+def execute(request: WSGIRequest) -> render:
     """Функция для выполнения основной логики.
 
     Args:

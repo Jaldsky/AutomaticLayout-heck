@@ -43,7 +43,7 @@ class ImageHelper(object):
             return img.size
 
     @staticmethod
-    def bedaub_text(path_to_img: str, path_to_save: str, languages=None):
+    def bedaub_text(path_to_img: str, path_to_save: str, languages=None) -> str:
         """Функция поиска и замазки текста.
 
         Args:

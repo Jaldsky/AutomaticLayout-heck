@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, Optional
 from skimage.metrics import structural_similarity
 from cv2 import imread, resize, cvtColor, cvtColor, COLOR_BGR2RGB, COLOR_BGR2GRAY
 from sklearn.metrics.pairwise import cosine_similarity
@@ -186,7 +186,7 @@ class ComparatorStructuralSimilarityIndex(ComparatorBase):
         """Функция проверки схожести изображений.
 
         Returns:
-            True - похожи, False - не похожи.
+            Да - похожи, Нет - не похожи.
         """
         nrmse = self.compare_exec
         if nrmse <= self.threshold:
