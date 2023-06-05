@@ -107,7 +107,7 @@ class ComparatorMeanSquaredError(ComparatorBase):
     """Класс для сравнения схожести двух изображений по методу среднеквадратичной ошибки (Mean Squared Error - MSE)."""
 
     def __init__(self, reference_img_path: str, sample_img_path: str, img_size: Tuple = (500, 500),
-                 threshold: float = 60) -> None:
+                 threshold: float = 0.5) -> None:
         """Инициализация класса.
 
         Args:
@@ -130,7 +130,7 @@ class ComparatorMeanSquaredError(ComparatorBase):
             True - похожи, False - не похожи.
         """
         nrmse = self.compare_exec
-        if nrmse >= self.threshold:
+        if nrmse <= self.threshold:
             return 'Нет'
         else:
             return 'Да'
@@ -143,8 +143,7 @@ class ComparatorMeanSquaredError(ComparatorBase):
             Процент схожести двух изображений.
         """
         mse = self.compare_exec
-        max_pixel_value = 255  # grayscale image
-        similarity_percentage = ((max_pixel_value ** 2) - mse) / (max_pixel_value ** 2) * 100
+        similarity_percentage = mse * 100
         return similarity_percentage
 
     @cached_property
@@ -157,9 +156,9 @@ class ComparatorMeanSquaredError(ComparatorBase):
         reference_img = self.prepare_image(self.reference_img_path, self.img_size)
         sample_img = self.prepare_image(self.sample_img_path, self.img_size)
 
-        # calculate the root mean square error (RMSE)
+        # calculate the root mean square error (MSE)
         mse = np.mean((reference_img - sample_img) ** 2)
-        return mse
+        return 1 - (mse / 100)
 
 
 class ComparatorStructuralSimilarityIndex(ComparatorBase):
@@ -202,7 +201,7 @@ class ComparatorStructuralSimilarityIndex(ComparatorBase):
             Процент схожести.
         """
         ssim = self.compare_exec
-        similarity_percentage = (ssim + 1) * 50
+        similarity_percentage = ssim * 100
         return similarity_percentage
 
     @cached_property
