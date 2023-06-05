@@ -107,7 +107,7 @@ class ComparatorMeanSquaredError(ComparatorBase):
     """Класс для сравнения схожести двух изображений по методу среднеквадратичной ошибки (Mean Squared Error - MSE)."""
 
     def __init__(self, reference_img_path: str, sample_img_path: str, img_size: Tuple = (500, 500),
-                 threshold: float = 0.5) -> None:
+                 threshold: float = 0.45) -> None:
         """Инициализация класса.
 
         Args:
@@ -223,7 +223,7 @@ class ComparatorNeuralNetworkVGG16(ComparatorBase):
     """Класс для сравнения схожести двух изображений на основе нейросети VGG16."""
 
     def __init__(self, reference_img_path: str, sample_img_path: str, img_size: Tuple = (224, 224),
-                 threshold: float = 0.85) -> None:
+                 threshold: float = 0.8) -> None:
         """Инициализация класса.
 
         Args:
