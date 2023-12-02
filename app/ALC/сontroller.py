@@ -5,13 +5,13 @@ import logging
 
 from pyunpack import Archive
 
-from ALC_dialog.models import ProjectSettings
+from app.models import ProjectSettings
 
-from ALC_dialog.ALC.selenium_helper import SeleniumHelper
-from ALC_dialog.ALC.image_helper import ImageHelper, PIC_NAME
+from app.ALC.selenium_helper import SeleniumHelper
+from app.ALC.image_helper import ImageHelper, PIC_NAME
 
 
-from ALC_dialog.ALC.comparator import ComparatorMeanSquaredError, ComparatorStructuralSimilarityIndex, \
+from app.ALC.comparator import ComparatorMeanSquaredError, ComparatorStructuralSimilarityIndex, \
     ComparatorNeuralNetworkVGG16
 
 
@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 class Controller:
     """Класс для контроля выполнения проверки схожести двух изображений."""
-    display_img_path = path.join(getcwd(), 'ALC_dialog', 'static', 'imgs')
+    display_img_path = path.join(getcwd(), 'app', 'static', 'imgs')
 
     @staticmethod
     def unzip(site_path: str) -> List:

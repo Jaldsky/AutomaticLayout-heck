@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ALC_dialog', '0003_projectsettings_alter_uploadedfile_file'),
+        ('app', '0003_projectsettings_alter_uploadedfile_file'),
     ]
 
     operations = [

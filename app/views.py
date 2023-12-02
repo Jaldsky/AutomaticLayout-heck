@@ -12,7 +12,7 @@ from django.shortcuts import render
 from .models import UploadedFile, ProjectSettings
 from .forms import FileUploadForm
 
-from ALC_dialog.ALC.сontroller import Controller
+from app.ALC.сontroller import Controller
 
 
 logger = logging.getLogger(__name__)
