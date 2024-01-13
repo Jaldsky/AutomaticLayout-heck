@@ -9,10 +9,10 @@ import logging
 from django.core.handlers.wsgi import WSGIRequest
 from django.shortcuts import render
 
-from .models import UploadedFile, ProjectSettings
-from .forms import FileUploadForm
+from app.models import UploadedFile, ProjectSettings
+from app.forms import FileUploadForm
 
-from app.ALC.сontroller import Controller
+from app.engine.сontroller import Controller
 
 
 logger = logging.getLogger(__name__)

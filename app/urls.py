@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import execute
+from app.views import execute
 
 urlpatterns = [
     path('', execute, name='app'),
