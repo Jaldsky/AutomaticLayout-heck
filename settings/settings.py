@@ -1,26 +1,20 @@
 from pathlib import Path
-from os import path, getcwd
+from os import path
 
 
-UPLOADS_FILES_PATH = 'results/uploads'
+BASE_DIR = Path(__file__).resolve().parent.parent  # project root directory
+MEDIA_ROOT = path.join(BASE_DIR, 'app', 'media')
+STATIC_URL = 'static/'
 
-MEDIA_ROOT = path.join(getcwd(), 'app', 'media')
+UPLOADS_FILES_PATH = 'results/uploads'  # folder for downloadable content
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-4)ycj8^ih^xaq+b3+%0z1zdm&0ufhv29i5mpjdmjum+=_di!l8'
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
-ALLOWED_HOSTS = []
-
-
-# Application definition
+LANGUAGE_CODE = 'en-us'
+TIME_ZONE = 'UTC'
+USE_I18N = True   # internalization
+USE_TZ = True  # time zone support
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -30,20 +24,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'app',
-    'settings'
+    'settings',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
-ROOT_URLCONF = 'app.urls'
 
 TEMPLATES = [
     {
@@ -61,60 +50,15 @@ TEMPLATES = [
     },
 ]
 
+ROOT_URLCONF = 'app.urls'
+
 WSGI_APPLICATION = 'settings.wsgi.application'
-
-
-# Database
-# https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': path.join(BASE_DIR, 'db', 'db.sqlite3'),
+        'NAME': path.join(BASE_DIR, 'app', 'alc.db'),
     }
 }
 
-# Password validation
-# https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
-
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-]
-
-
-# Internationalization
-# https://docs.djangoproject.com/en/4.1/topics/i18n/
-
-LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
-
-USE_I18N = True
-
-USE_TZ = True
-
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.1/howto/static-files/
-
-STATIC_URL = 'static/'
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-STATICFILES_DIRS = [
-    path.join(BASE_DIR, 'settings', 'static'),
-]
