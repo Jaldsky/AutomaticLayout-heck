@@ -6,7 +6,7 @@ from selenium.webdriver.chrome.options import Options
 from Screenshot import Screenshot_Clipping
 
 
-CHROME_DRIVER_PATH = path.join(getcwd(),'app', 'engine', 'drivers', 'chromedriver.exe')
+CHROME_DRIVER_PATH = path.join(getcwd(), 'app', 'engine', 'drivers', 'chromedriver.exe')
 SITE_SCREENSHOT_NAME = 'sample.png'
 
 

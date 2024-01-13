@@ -68,6 +68,8 @@ def _update_settings(params: Dict) -> Dict:
         Словарь с сохраненными парамметрами.
     """
     project_settings = ProjectSettings.objects.first()
+    if project_settings is None:
+        return
 
     project_settings.bedaub_text = bool(True if params.get('bedaub_text') else False)
     project_settings.clear_local_cache = bool(True if params.get('clear_local_cache') else False)

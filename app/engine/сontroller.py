@@ -2,8 +2,7 @@ from typing import Dict, List, Tuple, Optional
 from os import path, getcwd, scandir, listdir, unlink, rename
 from shutil import copy
 import logging
-
-from pyunpack import Archive
+import zipfile
 
 from app.models import ProjectSettings
 
@@ -37,12 +36,10 @@ class Controller:
         """
         file_name = str(site_path).split('\\')[-1]
         save_path = str(site_path).replace(file_name, '')
-        import zipfile
+
         with zipfile.ZipFile(site_path, 'r') as zip_ref:
             zip_ref.extractall(save_path)
 
-
-        # Archive(site_path).extractall(save_path)
         folders_paths = [path.join(save_path, item.name) for item in scandir(save_path) if not item.is_file()]
         return folders_paths
 
