@@ -1,72 +1,118 @@
-from typing import Tuple
-from os import path
+from abc import ABC
+from enum import Enum
 
+import cv2
+import easyocr
 from PIL import Image
 from psd_tools import PSDImage
-from cv2 import imread, imwrite, rectangle, FILLED
-
-import easyocr
 
 
-PIC_NAME = 'reference_sample.png'
+FILL_TEXT_COLOR = (0, 255, 0)  # green
 
 
-class ImageHelper(object):
-    """Класс для работы с изображениями."""
+class Language(str, Enum):
+    english = 'en'
+    russian = 'ru'
 
-    def convert_psd_to_png(self, path_to_img: str, path_to_save: str) -> str:
-        """Конвертация формата psd в png.
+    def __str__(self) -> str:
+        return str.__str__(self)
 
-        Args:
-            path_to_img: путь до изображения.
-            path_to_save: путь для сохранения.
 
-        Returns:
-            Путь с сохраненным сконвертированным изображением.
-        """
-        psd_pic = PSDImage.open(path_to_img)
-        save_path = path.join(path_to_save, PIC_NAME)
-        psd_pic.composite().save(save_path)
-        return save_path
+class ImageHelperBase(ABC):
+    """Base class for interacting with images."""
+
+
+class ImageHelper(ImageHelperBase):
+    """Class for interacting with images."""
 
     @staticmethod
-    def get_image_resolution(path_to_img: str) -> Tuple[int, int]:
-        """Функция получения разрешения изображения.
+    def convert_psd_to_image(psd_path: str, save_image_path: str) -> None:
+        """Method for converting psd to png format.
 
         Args:
-            path_to_img: путь до изображения.
-
-        Returns:
-            Кортеж со значением ширины и высоты.
+            psd_path: path to psd file.
+            save_image_path: save path image.
         """
-        with Image.open(path_to_img) as img:
-            return img.size
+        try:
+            PSDImage.open(psd_path).composite().save(save_image_path)
+        except TypeError:
+            raise ImageHelperTypeException
+        except ValueError:
+            raise ImageHelperFileExtensionException
+        except (FileNotFoundError, PermissionError):
+            raise ImageHelperPSDPathHException
 
     @staticmethod
-    def bedaub_text(path_to_img: str, path_to_save: str, languages=None) -> str:
-        """Функция поиска и замазки текста.
+    def get_image_object(image_path: str):
+        """Method to get an image object.
 
         Args:
-            path_to_img: путь до изображения.
-            path_to_save: путь для сохранения.
-            languages: используемые языки на изображении.
+            image_path: path to image.
 
         Returns:
-            Путь с сохраненным замазаным текстом изображением.
+            Image object.
         """
-        if languages is None:
-            languages = ['en', 'ru']
+        try:
+            with Image.open(image_path) as image:
+                return image
+        except (FileNotFoundError, AttributeError):
+            raise ImageHelperGetImagePathException
 
-        image = imread(path_to_img)
+    def get_image_resolution(self, image_path: str) -> tuple[int, int]:
+        """Image resolution method.
 
-        reader = easyocr.Reader(languages, gpu=True)
+        Args:
+            image_path: path to image.
+
+        Returns:
+            Tuple with width and height values.
+        """
+        return self.get_image_object(image_path).size
+
+    @staticmethod
+    def hide_text(image_path: str, save_image_path: str, languages=(Language.english, Language.russian)) -> None:
+        """Method to find text in an image and hide it.
+
+        Args:
+            image_path: path to image.
+            save_image_path: save path image.
+            languages: cortege with languages.
+        """
+        image = cv2.imread(image_path)
+        if image is None:
+            raise ImageHelperGetImagePathException
+
+        reader = easyocr.Reader(languages)
         results = reader.readtext(image)
 
         for result in results:
             bbox = result[0]
             x1, y1 = int(bbox[0][0]), int(bbox[0][1])
             x2, y2 = int(bbox[2][0]), int(bbox[2][1])
-            rectangle(image, (x1, y1), (x2, y2), (0, 255, 0), FILLED)
+            cv2.rectangle(image, (x1, y1), (x2, y2), FILL_TEXT_COLOR, cv2.FILLED)
 
-        imwrite(path_to_save, image)
-        return path_to_save
+        cv2.imwrite(save_image_path, image)
+
+
+class ImageHelperTypeException(Exception):
+
+    def __str__(self):
+        return 'Incorrect type of argument passed.'
+
+
+class ImageHelperFileExtensionException(Exception):
+
+    def __str__(self):
+        return 'Unknown or unspecified file extension.'
+
+
+class ImageHelperPSDPathHException(Exception):
+
+    def __str__(self):
+        return 'Could not get the path to the psd file.'
+
+
+class ImageHelperGetImagePathException(Exception):
+
+    def __str__(self):
+        return 'Failed to get image.'
