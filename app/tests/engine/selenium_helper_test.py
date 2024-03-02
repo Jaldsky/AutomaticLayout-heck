@@ -1,13 +1,13 @@
 from unittest import TestCase
 
-from app.engine.selenium_manager import SeleniumOptions, SeleniumDriver
+from app.engine.selenium_manager import SeleniumOptions, SeleniumDriver, SeleniumManager
 
 
 class SeleniumHelperTest(TestCase):
 
     @staticmethod
     def get_options_list(selenium_options: SeleniumOptions) -> list:
-        selenium_options = selenium_options.get_settings.to_capabilities()['goog:chromeOptions']['args']
+        selenium_options = selenium_options.settings.to_capabilities()['goog:chromeOptions']['args']
         selenium_options.sort()
         return selenium_options
 
@@ -30,3 +30,7 @@ class SeleniumHelperTest(TestCase):
         driver = SeleniumDriver()
         driver.driver.get('https://www.google.com/')
         self.assertEqual('https://www.google.com/', driver.driver.current_url)
+
+    def test_get_full_screenshot_page(self):
+        manager = SeleniumManager()
+        pass

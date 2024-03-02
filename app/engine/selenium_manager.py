@@ -3,7 +3,6 @@ from os import path, getcwd
 from dataclasses import dataclass, field
 from typing import Optional
 
-from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver import Chrome
@@ -18,14 +17,16 @@ SITE_SCREENSHOT_NAME = 'sample.png'
 @dataclass
 class SeleniumOptionsBase(ABC):
     """Base class for interacting with Selenium driver options."""
-    settings: Options = None
+    selenium_option: Options = None
 
     def __post_init__(self) -> None:
-        self.settings = Options()
+        """Post initialization."""
+        self.selenium_option = Options()
 
     @property
     @abstractmethod
-    def get_settings(self):
+    def settings(self) -> Options:
+        """Property for getting the instance of the browser settings class."""
         pass
 
 
@@ -42,20 +43,20 @@ class SeleniumOptions(SeleniumOptionsBase):
         """Post initialization."""
         super().__post_init__()
 
-        web_driver_settings: list = self.default_settings
+        driver_settings: list = self.default_settings
         if custom_settings := self.custom_settings:
-            web_driver_settings += custom_settings
+            driver_settings += custom_settings
 
-        _ = [self.settings.add_argument(i) for i in set(web_driver_settings)]
+        _ = [self.selenium_option.add_argument(i) for i in set(driver_settings)]
 
     @property
-    def get_settings(self) -> Options:
-        """Method for getting an instance of the browser settings class.
+    def settings(self) -> Options:
+        """Property for getting the instance of the browser settings class.
 
         Returns:
             An instance of the browser settings class with the settings applied.
         """
-        return self.settings
+        return self.selenium_option
 
 
 @dataclass
@@ -63,25 +64,38 @@ class SeleniumDriverBase(ABC):
     """Base class for interacting with Selenium driver."""
     selenium_driver_type: str = 'Chrome'
 
+    @property
+    @abstractmethod
+    def driver(self):
+        """Property for getting the instance of the Selenium driver."""
+        pass
+
 
 @dataclass
 class SeleniumDriver(SeleniumDriverBase):
     """Class for interacting with Selenium driver."""
     custom_settings: Optional[list] = None
-    driver: Optional[WebDriver] = None
+    selenium_driver: Optional[WebDriver] = None
     driver_path: str = CHROME_DRIVER_PATH
 
     def __post_init__(self) -> None:
         """Post initialization."""
         if self.selenium_driver_type.lower() == 'chrome':
-            self.driver = Chrome(
+            self.selenium_driver = Chrome(
                 executable_path=self.driver_path,
-                options=SeleniumOptions(
-                    custom_settings=self.custom_settings
-                ).get_settings
+                options=SeleniumOptions(custom_settings=self.custom_settings).settings
             )
             return None
         raise SeleniumDriverException
+
+    @property
+    def driver(self):
+        """Property for getting the instance of the Selenium driver.
+
+        Returns:
+            An instance of the Selenium driver.
+        """
+        return self.selenium_driver
 
 
 @dataclass
@@ -93,10 +107,7 @@ class SeleniumManagerBase(ABC):
 class SeleniumManager(SeleniumManagerBase):
     """Class for interacting with Selenium."""
     custom_settings: Optional[list] = None
-    selenium_driver: Optional[SeleniumDriver] = None
-
-    def __post_init__(self):
-        self.selenium_driver = SeleniumDriver(custom_settings=self.custom_settings)
+    driver: Optional[WebDriver] = SeleniumDriver(custom_settings=custom_settings).driver
 
     def get_full_screenshot_page(self, page_path: str, save_image_path: str) -> str:
         """Получение скриншота всей страницы.
@@ -106,11 +117,11 @@ class SeleniumManager(SeleniumManagerBase):
             save_image_path: save path image.
 
         Returns:
-            Путь с сохраненным скриншотом.
+            Path to save the resulting image.
         """
-        self.driver.get(index_path)
+        self.driver.get(page_path)
         return Screenshot_Clipping.Screenshot().full_Screenshot(driver=self.driver,
-                                                                save_path=save_img_path,
+                                                                save_path=save_image_path,
                                                                 image_name=SITE_SCREENSHOT_NAME)
 
 
