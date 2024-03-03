@@ -1,3 +1,4 @@
+from os import path, getcwd
 import zipfile
 from typing import Optional
 
@@ -13,10 +14,14 @@ def unzip(archive_path: str, save_path: Optional[str] = None) -> None:
         archive_path: path to the archive.
         save_path: save path.
     """
+    folder_save_path, extension = path.splitext(archive_path)
+    if extension.lstrip('.') not in ('zip', ):
+        raise UnZipFileException
+
     if not save_path:
-        save_path = archive_path
+        save_path = folder_save_path
     with zipfile.ZipFile(archive_path, 'r') as zip_ref:
-        zip_ref.extractall(save_path)
+        zip_ref.extractall(path.join(getcwd(), save_path))
 
 
 def get_scan_paths(path: str, exclude_types: Optional[tuple]) -> Optional[list]:
@@ -26,3 +31,9 @@ def get_scan_paths(path: str, exclude_types: Optional[tuple]) -> Optional[list]:
                 pass
             elif 'exclude_type' == 'folder':
                 pass
+
+
+class UnZipFileException(Exception):
+
+    def __str__(self):
+        return 'Unsupported archive type'
