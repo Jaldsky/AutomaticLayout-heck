@@ -7,11 +7,9 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver import Chrome
 
-from Screenshot import Screenshot_Clipping
 
-
+# TODO move to project settings
 CHROME_DRIVER_PATH = path.join(getcwd(), 'app', 'engine', 'drivers', 'chromedriver.exe')
-SITE_SCREENSHOT_NAME = 'sample.png'
 
 
 @dataclass
@@ -59,7 +57,6 @@ class SeleniumOptions(SeleniumOptionsBase):
         return self.selenium_option
 
 
-@dataclass
 class SeleniumDriverBase(ABC):
     """Base class for interacting with Selenium driver."""
     selenium_driver_type: str = 'Chrome'
@@ -71,25 +68,22 @@ class SeleniumDriverBase(ABC):
         pass
 
 
-@dataclass
 class SeleniumDriver(SeleniumDriverBase):
     """Class for interacting with Selenium driver."""
     custom_settings: Optional[list] = None
-    selenium_driver: Optional[WebDriver] = None
     driver_path: str = CHROME_DRIVER_PATH
 
-    def __post_init__(self) -> None:
-        """Post initialization."""
+    def __init__(self, custom_settings: Optional[list] = None, driver_path: str = CHROME_DRIVER_PATH) -> None:
         if self.selenium_driver_type.lower() == 'chrome':
-            self.selenium_driver = Chrome(
-                executable_path=self.driver_path,
-                options=SeleniumOptions(custom_settings=self.custom_settings).settings
-            )
-            return None
-        raise SeleniumDriverException
+            try:
+                self.selenium_driver: WebDriver = Chrome(
+                    options=SeleniumOptions(custom_settings=custom_settings).settings
+                )
+            except Exception:
+                raise SeleniumDriverException
 
     @property
-    def driver(self):
+    def driver(self) -> WebDriver:
         """Property for getting the instance of the Selenium driver.
 
         Returns:
@@ -98,18 +92,17 @@ class SeleniumDriver(SeleniumDriverBase):
         return self.selenium_driver
 
 
-@dataclass
 class SeleniumManagerBase(ABC):
     """Base class for interacting with Selenium."""
 
 
-@dataclass
 class SeleniumManager(SeleniumManagerBase):
     """Class for interacting with Selenium."""
-    custom_settings: Optional[list] = None
-    driver: Optional[WebDriver] = SeleniumDriver(custom_settings=custom_settings).driver
 
-    def get_full_screenshot_page(self, page_path: str, save_image_path: str) -> str:
+    def __init__(self, custom_settings: Optional[list] = None):
+        self.driver: WebDriver = SeleniumDriver(custom_settings=custom_settings).driver
+
+    def get_full_screenshot_page(self, page_path: str, save_image_path: Optional[str] = None) -> str:
         """Получение скриншота всей страницы.
 
         Args:
@@ -119,10 +112,16 @@ class SeleniumManager(SeleniumManagerBase):
         Returns:
             Path to save the resulting image.
         """
+        folder_save_path = path.dirname(page_path)
+        if not save_image_path:
+            save_image_path = path.join(folder_save_path, 'page.png')
+
         self.driver.get(page_path)
-        return Screenshot_Clipping.Screenshot().full_Screenshot(driver=self.driver,
-                                                                save_path=save_image_path,
-                                                                image_name=SITE_SCREENSHOT_NAME)
+        total_width = self.driver.execute_script("return document.body.offsetWidth")
+        total_height = self.driver.execute_script("return document.body.scrollHeight")
+        self.driver.set_window_size(total_width, total_height)
+        self.driver.save_screenshot(save_image_path)
+        return save_image_path
 
 
 class SeleniumDriverException(Exception):
