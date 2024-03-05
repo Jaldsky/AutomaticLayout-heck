@@ -51,15 +51,22 @@ class TestImageHelper(TestCase):
         with self.subTest('Get image resolution'):
             self.assertEqual((601, 639), ImageHelper().get_image_resolution(test_image_path))
 
+    def test_read_image(self):
+        test_image_path = path.join(self.test_data_path, 'img_with_text_test.png')
+
+        with self.subTest('Read image'):
+            self.assertTupleEqual((639, 601, 3), ImageHelper.read_image(test_image_path).shape)
+
+        with self.subTest('Unknown image path'):
+            with self.assertRaises(ImageHelperGetImagePathException):
+                ImageHelper.read_image('')
+
     def test_hide_text(self):
         test_image_path = path.join(self.test_data_path, 'img_with_text_test.png')
         save_image_path = path.join(self.test_data_path, 'img_with_filled_text.png')
 
-        with self.subTest('Unknown image path'):
-            with self.assertRaises(ImageHelperGetImagePathException):
-                ImageHelper().hide_text('', save_image_path)
-
-        with self.subTest('Unknown image path'):
+        with self.subTest('Hide text at image'):
+            # TODO write tests for determining image shading
             ImageHelper().hide_text(test_image_path, save_image_path)
             self.assertTrue(path.exists(save_image_path))
 

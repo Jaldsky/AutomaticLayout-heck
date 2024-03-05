@@ -1,6 +1,9 @@
+from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from typing import Tuple
 from skimage.metrics import structural_similarity
-from cv2 import imread, resize, cvtColor, cvtColor, COLOR_BGR2RGB, COLOR_BGR2GRAY
+import cv2
+# from cv2 import imread, resize, cvtColor, cvtColor, COLOR_BGR2RGB, COLOR_BGR2GRAY
 from sklearn.metrics.pairwise import cosine_similarity
 
 from keras.applications.resnet import preprocess_input
@@ -9,103 +12,89 @@ from keras.applications.vgg16 import VGG16
 
 # from tensorflow.keras.applications.vgg16 import VGG16, preprocess_input
 from functools import cached_property
-import numpy as np
+from numpy import ndarray
+
+from app.engine.image_helper import ImageHelper
 
 
-class ComparatorBase:
-    """Базовый класс для сравнения схожести двух изображений."""
-
-    def __init__(self):
-        self.threshold = None
-
-    def compare_exec(self, *args):
-        """Выполнить сравнение схожести двух изображений."""
-        pass
-
-    def get_similarity_percentages(self):
-        """Получить процент схожести двух изображений."""
-        pass
-
-    def are_images_similar(self):
-        """Функция проверки схожести изображений."""
-        pass
+@dataclass
+class ComparatorInterface(ABC):
+    """Interface for comparing image similarity."""
 
     @staticmethod
-    def imread_image(img_path: str) -> np.ndarray:
-        """Считать цветное изображение.
+    @abstractmethod
+    def get_similarity_percentages(compare_index: float) -> float:
+        """Method for obtaining the percentage of similarity between two images."""
 
-        Args:
-            img_path: путь до изображения.
+    @abstractmethod
+    def are_images_similar(self, compare_index: float) -> bool:
+        """Method for obtaining an assertion of image similarity."""
 
-        Returns:
-            Данные изображения в виде массива NumPy в формате RGB.
-        """
-        img = imread(img_path)
-        return cvtColor(img, COLOR_BGR2RGB)
+    @abstractmethod
+    def prepare_comparison_image(self, *args):
+        """Method for preparing an image for comparison."""
 
-    @staticmethod
-    def resize_image(img_array: np.ndarray, size: Tuple[int, int]):
-        """Изменить размер изображения.
 
-        Args:
-            img_array: изображение в виде массива.
-            size: размер изображения.
+@dataclass
+class ComparatorBase(ComparatorInterface):
+    """Base class for comparing image similarity."""
+    similarity_threshold: float
+    image_helper: ImageHelper = ImageHelper()
 
-        Returns:
-            Изображение в виде массива с измененным размером.
-        """
-        return resize(img_array, size)
+    @abstractmethod
+    def compare_exec(self, *args) -> float:
+        """Method for performing image similarity comparison."""
 
     @staticmethod
-    def convert_image_to_grayscale(img_array: np.ndarray,) -> np.ndarray:
-        """Перевести цветное изображение в оттенки серого.
+    def get_similarity_percentages(compare_index: float) -> float:
+        """Method for obtaining the percentage of similarity between two images.
 
         Args:
-            img_array: изображение в виде массива.
+            compare_index: image similarity index.
 
         Returns:
-            Изображение в виде массива с переведенным в градации серого цветами.
+            Percentage of similarity between images.
         """
-        return cvtColor(img_array, COLOR_BGR2GRAY)
+        # TODO add unit test
+        return compare_index * 100
 
-    @property
-    def get_similarity_index(self):
-        """Получить индекс схожести двух изображений.
-
-        Returns:
-            Схожесть двух изображений в процентах."""
-        return self.compare_exec
-
-    @property
-    def get_threshold(self) -> float:
-        """Получить порог сравнения схожести двух изображений.
-
-        Returns:
-            Порог схожести двух изображений."""
-        return self.threshold
-
-    def prepare_image(self, img_path: str, img_size: Tuple[int, int], convert_grayscale: bool = True) -> np.ndarray:
-        """Подготовить изображение для сравнения: представить изображение в виде массива,
-        изменить размер изображения, перевести в градации серого.
+    def are_images_similar(self, compare_index: float) -> bool:
+        """Method for obtaining an assertion of image similarity.
 
         Args:
-            img_path: путь до изображения.
-            img_size: размер изображения.
-            convert_grayscale: перевести цветное изображение в градации серого.
+            compare_index: image similarity index.
 
         Returns:
-            Обработанное изображение.
+            Compare the images and determine if they are similar.
         """
-        # Read a color image and represent it as an array
-        img = self.imread_image(img_path)
+        # TODO add unit test
+        return compare_index <= self.similarity_threshold
 
-        # Present images in the same size
-        img = self.resize_image(img, img_size)
+    def prepare_comparison_image(self, image_path: str,
+                                 image_size: tuple[int, int],
+                                 convert_grayscale: bool = True) -> ndarray:
+        """Method for preparing an image for comparison.
+        1. Represent the image as an array.
+        2. Convert to grayscale.
+        3. Normalize size.
+
+        Args:
+            image_path: path to image.
+            image_size: image size.
+            convert_grayscale: convert image to grayscale.
+
+        Returns:
+            Pre-processed image(pixel matrix) is ready for comparison.
+        """
+        # TODO add unit test
+        image = self.image_helper.read_image(image_path)
+
+        image = self.image_helper.convert_image_bgr_to_rgb(image)
+        image = self.image_helper.resize_image(image, image_size)
 
         if convert_grayscale:
-            # Convert the images to grayscale
-            img = self.convert_image_to_grayscale(img)
-        return img
+            image = self.image_helper.convert_image_to_grayscale(image)
+        return image
 
 
 class ComparatorMeanSquaredError(ComparatorBase):

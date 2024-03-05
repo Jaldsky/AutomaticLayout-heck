@@ -5,8 +5,9 @@ import cv2
 import easyocr
 from PIL import Image
 from psd_tools import PSDImage
+from numpy import ndarray
 
-
+# TODO move to project settings
 FILL_TEXT_COLOR = (0, 255, 0)  # green
 
 
@@ -70,7 +71,61 @@ class ImageHelper(ImageHelperBase):
         return self.get_image_object(image_path).size
 
     @staticmethod
-    def hide_text(image_path: str, save_image_path: str, languages=(Language.english, Language.russian)) -> None:
+    def read_image(image_path: str) -> ndarray:
+        """Method for reading an image.
+
+        Args:
+            image_path: path to image.
+
+        Returns:
+            Pixel matrix.
+        """
+        image = cv2.imread(image_path)
+        if image is None:
+            raise ImageHelperGetImagePathException
+        return image
+
+    @staticmethod
+    def convert_image_bgr_to_rgb(image_matrix: ndarray) -> ndarray:
+        """Method for converting an image from bgr to rgb.
+
+        Args:
+            image_matrix: image pixel matrix.
+
+        Returns:
+            Color converted pixel matrix.
+        """
+        # TODO Add unit test
+        return cv2.cvtColor(image_matrix, cv2.COLOR_BGR2RGB)
+
+    @staticmethod
+    def resize_image(image_matrix: ndarray, size: tuple[int, int]) -> ndarray:
+        """Method to resize an image.
+
+        Args:
+            image_matrix: image pixel matrix.
+            size: size for resize.
+
+        Returns:
+            Resized pixel matrix.
+        """
+        # TODO Add unit test
+        return cv2.resize(image_matrix, size)
+
+    @staticmethod
+    def convert_image_to_grayscale(image_matrix: ndarray) -> ndarray:
+        """Method for converting a color image to grayscale.
+
+        Args:
+            image_matrix: image pixel matrix.
+
+        Returns:
+            Grayscale converted pixel matrix.
+        """
+        # TODO Add unit test
+        return cv2.cvtColor(image_matrix, cv2.COLOR_BGR2GRAY)
+
+    def hide_text(self, image_path: str, save_image_path: str, languages=(Language.english, Language.russian)) -> None:
         """Method to find text in an image and hide it.
 
         Args:
@@ -78,9 +133,7 @@ class ImageHelper(ImageHelperBase):
             save_image_path: save path image.
             languages: cortege with languages.
         """
-        image = cv2.imread(image_path)
-        if image is None:
-            raise ImageHelperGetImagePathException
+        image = self.read_image(image_path)
 
         reader = easyocr.Reader(languages)
         results = reader.readtext(image)
