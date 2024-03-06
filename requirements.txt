@@ -1,8 +1,9 @@
 selenium==4.18.1
 Django==4.2
 psd-tools==1.9.31
+numpy==1.26.4
 opencv-python==4.9.0.80
 pillow==10.2.0
 easyocr==1.7.1
 scikit-learn==1.2.2
-tensorflow==2.12.0
+tensorflow==2.15.0
