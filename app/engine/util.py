@@ -1,9 +1,10 @@
-from os import path, getcwd
+from os import path, getcwd, walk
 import zipfile
 from typing import Optional
 
 
 def format_path(path: str) -> str:
+    # TODO find out if this method is needed
     pass
 
 
@@ -24,13 +25,11 @@ def unzip(archive_path: str, save_path: Optional[str] = None) -> None:
         zip_ref.extractall(path.join(getcwd(), save_path))
 
 
-def get_scan_paths(path: str, exclude_types: Optional[tuple]) -> Optional[list]:
-    if exclude_types:
-        for exclude_type in exclude_types:
-            if 'exclude_type' == 'file':
-                pass
-            elif 'exclude_type' == 'folder':
-                pass
+def search_folder_key_file_paths(folder_path: str, key_file: str) -> Optional[list]:
+    return [path.join(dir_path, file_name)
+            for dir_path, _, file_names in walk(folder_path)
+            for file_name in file_names
+            if file_name.lower() == key_file]
 
 
 class UnZipFileException(Exception):
