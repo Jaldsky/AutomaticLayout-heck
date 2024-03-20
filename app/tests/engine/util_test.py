@@ -8,7 +8,9 @@ from string import ascii_lowercase
 from app.engine.util import (
     unzip,
     search_folder_key_file_paths,
-    UnZipFileException
+    InvalidArchivePathException,
+    ArchivePathNotFoundException,
+    UnsupportedArchiveFormatException
 )
 
 
@@ -26,25 +28,34 @@ class UtilTest(TestCase):
                 file.write('')
 
     def test_unzip(self):
-        test_archive_path = path.join(getcwd(), 'app', 'tests', 'test_data', 'page_test.zip')
+        archive_zip_path = path.join(self.test_data, 'page_test.zip')
+        archive_rar_path = path.join(self.test_data, 'page_test.rar')
 
         with self.subTest('Unzip file'):
-            unzip(test_archive_path)
-            folder = path.splitext(test_archive_path)[0]
+            unzip(archive_zip_path)
+            folder = path.splitext(archive_zip_path)[0]
             self.assertTrue(path.exists(folder))
 
             rmtree(folder)
 
         with self.subTest('Custom save path'):
             save_path = path.join(getcwd(), 'app', 'tests', 'test_data', 'test')
-            unzip(test_archive_path, save_path)
+            unzip(archive_zip_path, save_path)
             self.assertTrue(path.exists(save_path))
 
             rmtree(save_path)
 
-        with self.subTest('Unsupported type'):
-            with self.assertRaises(UnZipFileException):
-                unzip(test_archive_path.replace('.zip', '.7z'))
+        with self.subTest('Unzip with invalid archive path'):
+            with self.assertRaises(InvalidArchivePathException):
+                unzip('')
+
+        with self.subTest('Unzip with nonexistent archive path'):
+            with self.assertRaises(ArchivePathNotFoundException):
+                unzip('test_archive.zip', '')
+
+        with self.subTest('Unzip with nonexistent archive path'):
+            with self.assertRaises(UnsupportedArchiveFormatException):
+                unzip(archive_rar_path)
 
     def test_search_folder_key_file_paths(self):
         test_dir = path.join(self.test_data, 'test_dir')
@@ -56,12 +67,25 @@ class UtilTest(TestCase):
             self.assertTrue(3, len(index_paths))
             for index_path in index_paths:
                 with self.subTest(string=path):
-                    self.assertIn('index.html', index_path, f"Файл '{index_path}' не содержит 'index.html'")
+                    self.assertIn('index.html', index_path)
 
             rmtree(test_dir)
 
-        # TODO add test cases:
-        # 1. Empty folder_path
-        # 2. Empty key_file
-        # 3. Incorrect path folder_path
-        # 4. Key not found, empty list
+        with self.subTest('Empty folder_path'):
+            paths = search_folder_key_file_paths('', 'index.html')
+            self.assertIsNone(paths)
+
+        with self.subTest('Empty key_file'):
+            paths = search_folder_key_file_paths(test_dir, '')
+            self.assertIsNone(paths)
+
+        with self.subTest('Incorrect path folder_path'):
+            paths = search_folder_key_file_paths('invalid_path', 'index.html')
+            self.assertIsNone(paths)
+
+        with self.subTest('Key not found, empty list'):
+            self.create_pages_structure(test_dir, 'other.html', 3)
+            paths = search_folder_key_file_paths(test_dir, 'index.html')
+            self.assertIsNone(paths)
+
+            rmtree(test_dir)
