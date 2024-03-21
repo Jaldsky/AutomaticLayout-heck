@@ -1,9 +1,9 @@
+import os
 from pathlib import Path
-from os import path
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent  # project root directory
-MEDIA_ROOT = path.join(BASE_DIR, 'app', 'media')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'app', 'media')
 STATIC_URL = 'static/'
 
 UPLOADS_FILES_PATH = 'results/uploads'  # folder for downloadable content
@@ -24,7 +24,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'app',
-    'settings',
 ]
 
 MIDDLEWARE = [
@@ -52,12 +51,12 @@ TEMPLATES = [
 
 ROOT_URLCONF = 'app.urls'
 
-WSGI_APPLICATION = 'settings.wsgi.application'
+WSGI_APPLICATION = 'main.wsgi.application'
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': path.join(BASE_DIR, 'app', 'alc.db'),
+        'NAME': os.path.join(os.getcwd(), os.pardir, 'database.db')
     }
 }
 
