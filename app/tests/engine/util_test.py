@@ -7,7 +7,7 @@ from string import ascii_lowercase
 
 from app.engine.util import (
     unzip,
-    search_folder_key_file_paths,
+    find_files_with_name,
     InvalidArchivePathException,
     ArchivePathNotFoundException,
     UnsupportedArchiveFormatException
@@ -32,18 +32,18 @@ class UtilTest(TestCase):
         archive_rar_path = path.join(self.test_data, 'page_test.rar')
 
         with self.subTest('Unzip file'):
-            unzip(archive_zip_path)
-            folder = path.splitext(archive_zip_path)[0]
-            self.assertTrue(path.exists(folder))
+            folder_path = unzip(archive_zip_path)
+            self.assertTrue(path.exists(folder_path))
 
-            rmtree(folder)
+            rmtree(folder_path)
 
         with self.subTest('Custom save path'):
             save_path = path.join(getcwd(), 'app', 'tests', 'test_data', 'test')
-            unzip(archive_zip_path, save_path)
-            self.assertTrue(path.exists(save_path))
 
-            rmtree(save_path)
+            folder_path = unzip(archive_zip_path, save_path)
+            self.assertTrue(path.exists(folder_path))
+
+            rmtree(folder_path)
 
         with self.subTest('Unzip with invalid archive path'):
             with self.assertRaises(InvalidArchivePathException):
@@ -62,7 +62,7 @@ class UtilTest(TestCase):
 
         with self.subTest('Search folder key file paths'):
             self.create_pages_structure(test_dir, 'index.html', 3)
-            index_paths = search_folder_key_file_paths(test_dir, 'index.html')
+            index_paths = find_files_with_name(test_dir, 'index.html')
 
             self.assertTrue(3, len(index_paths))
             for index_path in index_paths:
@@ -72,20 +72,20 @@ class UtilTest(TestCase):
             rmtree(test_dir)
 
         with self.subTest('Empty folder_path'):
-            paths = search_folder_key_file_paths('', 'index.html')
+            paths = find_files_with_name('', 'index.html')
             self.assertIsNone(paths)
 
         with self.subTest('Empty key_file'):
-            paths = search_folder_key_file_paths(test_dir, '')
+            paths = find_files_with_name(test_dir, '')
             self.assertIsNone(paths)
 
         with self.subTest('Incorrect path folder_path'):
-            paths = search_folder_key_file_paths('invalid_path', 'index.html')
+            paths = find_files_with_name('invalid_path', 'index.html')
             self.assertIsNone(paths)
 
         with self.subTest('Key not found, empty list'):
             self.create_pages_structure(test_dir, 'other.html', 3)
-            paths = search_folder_key_file_paths(test_dir, 'index.html')
+            paths = find_files_with_name(test_dir, 'index.html')
             self.assertIsNone(paths)
 
             rmtree(test_dir)

@@ -5,7 +5,7 @@ from typing import Optional
 SUPPORTED_ARCHIVE_FORMATS = ('zip', )
 
 
-def unzip(archive_path: str, save_path: Optional[str] = None) -> None:
+def unzip(archive_path: str, save_path: Optional[str] = None) -> Optional[str]:
     """Archive unpacking function.
 
     Args:
@@ -27,12 +27,14 @@ def unzip(archive_path: str, save_path: Optional[str] = None) -> None:
 
     with zipfile.ZipFile(archive_path, 'r') as zip_ref:
         try:
-            zip_ref.extractall(path.join(getcwd(), save_path))
+            extract_path = path.join(getcwd(), save_path)
+            zip_ref.extractall(extract_path)
+            return extract_path
         except Exception as e:
             raise UnZipFileException from e
 
 
-def search_folder_key_file_paths(folder_path: str, key_file: str) -> Optional[list]:
+def find_files_with_name(folder_path: str, key_file: str) -> Optional[list]:
     paths = [
         path.join(dir_path, file_name)
         for dir_path, _, file_names in walk(folder_path)
