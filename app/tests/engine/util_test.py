@@ -8,6 +8,7 @@ from string import ascii_lowercase
 from app.engine.util import (
     unzip,
     find_files_with_name,
+    generate_uui,
     InvalidArchivePathException,
     ArchivePathNotFoundException,
     UnsupportedArchiveFormatException
@@ -89,3 +90,6 @@ class UtilTest(TestCase):
             self.assertIsNone(paths)
 
             rmtree(test_dir)
+
+    def test_generate_uui(self):
+        self.assertEqual(36, len(generate_uui()))
