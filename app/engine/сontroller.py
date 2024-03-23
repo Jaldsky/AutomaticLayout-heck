@@ -1,18 +1,67 @@
-from typing import Dict, List, Tuple, Optional
-from os import path, getcwd, scandir, listdir, unlink, rename
-from shutil import copy
-import logging
-import zipfile
+from abc import ABC, abstractmethod
+from dataclasses import dataclass
 
-from app.models import ProjectSettings
-
-from app.engine.selenium_helper import SeleniumHelper
-from app.engine.image_helper import ImageHelper, PIC_NAME
+from app.engine.image_helper import ImageHelper
+from app.engine.selenium_manager import SeleniumManager
+from app.engine.util import unzip, find_files_with_name, remove_folder_or_file, join_path
+from app.models import UserSettings
+from main.settings import CACHE_PATH
 
 
-from app.engine.comparator import ComparatorMeanSquaredError, ComparatorStructuralSimilarityIndex, \
-    ComparatorNeuralNetworkVGG16
+@dataclass
+class CompareControllerBase(ABC):
+    """Base class to control the execution of image similarity checks."""
 
+    @abstractmethod
+    def exec(self):
+        pass
+
+
+@dataclass
+class CompareController(CompareControllerBase):
+    """Class for controlling the execution of image similarity checks."""
+    user_id: int
+
+    def __post_init__(self):
+        self.image_helper: ImageHelper = ImageHelper()
+        self.selenium_manager: SeleniumManager = SeleniumManager()
+
+    @property
+    def user_settings_model(self):
+        return UserSettings.objects.get(user_id=self.user_id)
+
+    @property
+    def cache_path_folder(self) -> str:
+        return join_path([CACHE_PATH, self.user_settings_model.cache_uui])
+
+    def get_rendered_sits_image_paths(self) -> list[str]:
+        # TODO remove hardcode style: archive, index, site_image to external variable
+        # TODO add exceptions + tests
+        archive_path = find_files_with_name(self.cache_path_folder, 'archive', inclusion=True)[0]
+        folder_path = unzip(archive_path)
+        remove_folder_or_file(archive_path)
+
+        indexes = find_files_with_name(folder_path, 'index', inclusion=True)
+
+        images = [self.selenium_manager.get_full_screenshot_page(
+            index_path, join_path([self.cache_path_folder, f'site_image_{number}.png']))
+             for number, index_path in enumerate(indexes)
+        ]
+        remove_folder_or_file(folder_path)
+        return images
+
+    def get_reference_image_path(self):
+        # TODO add exceptions + tests
+        # TODO remove hardcode style: template
+        template_path = find_files_with_name(self.cache_path_folder, 'template', inclusion=True)[0]
+        save_image_path = join_path([self.cache_path_folder, 'reference_image.png'])
+        self.image_helper.convert_psd_to_image(template_path, save_image_path)
+
+        remove_folder_or_file(template_path)
+        return save_image_path
+
+    def exec(self):
+        pass
 
 POSSIBLE_ARCHIVE_FORMATS = ['zip', 'rar']
 POSSIBLE_PIC_FORMATS = ['psd']
