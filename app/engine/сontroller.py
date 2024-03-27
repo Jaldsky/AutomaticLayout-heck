@@ -1,10 +1,16 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from typing import Union
 
+from app.engine.comparator import (
+    ComparatorMeanSquaredError,
+    ComparatorStructuralSimilarityIndex,
+    ComparatorNeuralNetworkVGG16
+)
 from app.engine.image_helper import ImageHelper
 from app.engine.selenium_manager import SeleniumManager
 from app.engine.util import unzip, find_files_with_name, remove_folder_or_file, join_path
-from app.models import UserSettings
+from app.models import UserSettings, Comparation, UserSession
 from main.settings import CACHE_PATH
 
 
@@ -27,12 +33,20 @@ class CompareController(CompareControllerBase):
         self.selenium_manager: SeleniumManager = SeleniumManager()
 
     @property
+    def user_session_model(self):
+        return UserSession.objects.get(user_id=self.user_id)
+
+    @property
     def user_settings_model(self):
         return UserSettings.objects.get(user_id=self.user_id)
 
     @property
+    def user_comparison_model(self):
+        return Comparation.objects.get(user_id=self.user_id)
+
+    @property
     def cache_path_folder(self) -> str:
-        return join_path([CACHE_PATH, self.user_settings_model.cache_uui])
+        return join_path([CACHE_PATH, self.user_session_model.uui])
 
     def get_rendered_sits_image_paths(self) -> list[str]:
         # TODO remove hardcode style: archive, index, site_image to external variable

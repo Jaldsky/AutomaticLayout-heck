@@ -1,5 +1,6 @@
 import os
 import django
 
-os.environ['DJANGO_SETTINGS_MODULE'] = 'main.settings'
-django.setup()
+if not os.environ.get('DJANGO_SETTINGS_MODULE'):
+    os.environ['DJANGO_SETTINGS_MODULE'] = 'main.settings'
+    django.setup()
