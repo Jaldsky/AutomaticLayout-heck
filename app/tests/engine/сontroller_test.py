@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 
 from app.engine.util import remove_folder_or_file, join_path, create_folder
 from app.engine.сontroller import CompareController
-from app.models import UserSession, Comparation, UserSettings
+from app.models import UserSession, UserSettings
 
 test_data = os.path.join(os.getcwd(), 'app', 'tests', 'test_data')
 
@@ -26,10 +26,10 @@ class ControllerTest(TestCase):
     def setUp(self) -> None:
         if not User.objects.filter(id=10).exists():
             user = User.objects.create(id=10, username='bob_tester')
-            user_session = UserSession.objects.create(user=user)
-            Comparation.objects.create(user=user_session, uui='7fbc1219-62e3-4aa7-a5fe-cb2629d03579')
+            UserSession.objects.create(user=user, uui='7fbc1219-62e3-4aa7-a5fe-cb2629d03579')
+            UserSettings.objects.create(user=user)
 
-    def test_get_rendered_sits_image_paths(self):
+    def test_exec(self):
         # create cache folder
         cache_path = join_path([test_data, '7fbc1219-62e3-4aa7-a5fe-cb2629d03579'])
         create_folder(cache_path)
