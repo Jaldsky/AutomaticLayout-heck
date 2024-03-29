@@ -1,5 +1,6 @@
 import uuid
 import os
+import shutil
 import zipfile
 from typing import Optional
 
@@ -12,6 +13,7 @@ def unzip(archive_path: str, save_path: Optional[str] = None) -> Optional[str]:
     Args:
         archive_path: path to the archive.
         save_path: save path.
+    #TODO Add doc
     """
     if not archive_path:
         raise InvalidArchivePathException
@@ -35,12 +37,14 @@ def unzip(archive_path: str, save_path: Optional[str] = None) -> Optional[str]:
             raise UnZipFileException from e
 
 
-def find_files_with_name(folder_path: str, key_file: str) -> Optional[list]:
+def find_files_with_name(folder_path: str, key_file: str, inclusion: bool = False) -> Optional[list]:
+    # TODO Add doc
     paths = [
         os.path.join(dir_path, file_name)
         for dir_path, _, file_names in os.walk(folder_path)
         for file_name in file_names
-        if file_name.lower() == key_file
+        if file_name.lower() == key_file or
+        inclusion and (key_file in file_name.lower())
     ]
     if not paths:
         return
@@ -48,7 +52,27 @@ def find_files_with_name(folder_path: str, key_file: str) -> Optional[list]:
 
 
 def generate_uui():
+    # TODO Add doc
     return str(uuid.uuid4())
+
+
+def create_folder(folder_path: str) -> None:
+    # TODO Add doc + test
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+
+
+def remove_folder_or_file(folder_or_file_path: str) -> None:
+    # TODO Add doc + test
+    if os.path.exists(folder_or_file_path):
+        if os.path.isfile(folder_or_file_path):
+            os.remove(folder_or_file_path)
+            return
+        shutil.rmtree(folder_or_file_path)
+
+
+def join_path(path_elements: list) -> str:
+    return os.path.join(*path_elements)
 
 
 class InvalidArchivePathException(Exception):

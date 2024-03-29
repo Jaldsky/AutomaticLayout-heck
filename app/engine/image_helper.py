@@ -86,6 +86,21 @@ class ImageHelper(ImageHelperBase):
         return image
 
     @staticmethod
+    def write_image(image_matrix: ndarray, save_image_path: str) -> str:
+        """Method for reading an image.
+
+        Args:
+            image_matrix: image pixel matrix.
+            save_image_path:
+
+        Returns:
+
+        """
+        # TODO Add unit test
+        cv2.imwrite(save_image_path, image_matrix)
+        return save_image_path
+
+    @staticmethod
     def convert_image_bgr_to_rgb(image_matrix: ndarray) -> ndarray:
         """Method for converting an image from bgr to rgb.
 
@@ -124,6 +139,28 @@ class ImageHelper(ImageHelperBase):
         """
         # TODO Add unit test
         return cv2.cvtColor(image_matrix, cv2.COLOR_BGR2GRAY)
+
+    @staticmethod
+    def hide_text(image_matrix: ndarray, languages=(Language.english, Language.russian)) -> ndarray:
+        """Method to find text in an image and hide it.
+
+        Args:
+            image_matrix: image pixel matrix.
+            languages: cortege with languages.
+
+        Returns:
+            Pixel matrix.
+        """
+        # TODO Add refactor unit test
+        reader = easyocr.Reader(languages)
+        results = reader.readtext(image_matrix)
+
+        for result in results:
+            bbox = result[0]
+            x1, y1 = int(bbox[0][0]), int(bbox[0][1])
+            x2, y2 = int(bbox[2][0]), int(bbox[2][1])
+            cv2.rectangle(image_matrix, (x1, y1), (x2, y2), FILL_TEXT_COLOR, cv2.FILLED)
+        return image_matrix
 
     def hide_text(self, image_path: str, save_image_path: str, languages=(Language.english, Language.russian)) -> None:
         """Method to find text in an image and hide it.

@@ -6,6 +6,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent  # project root directory
 MEDIA_ROOT = os.path.join(BASE_DIR, 'app', 'media')
 STATIC_URL = 'static/'
 
+CACHE_PATH = os.path.join(BASE_DIR, 'cache')
+
+MSE_THRESHOLD = 0.45
+SSIM_THRESHOLD = 0.5
+VGG16_THRESHOLD = 0.8
+
 UPLOADS_FILES_PATH = 'results/uploads'  # folder for downloadable content
 
 SECRET_KEY = 'django-insecure-4)ycj8^ih^xaq+b3+%0z1zdm&0ufhv29i5mpjdmjum+=_di!l8'
@@ -56,7 +62,7 @@ WSGI_APPLICATION = 'main.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(os.getcwd(), os.pardir, 'database.db')
+        'NAME': os.path.join(os.getcwd(), 'database.db')
     }
 }
 
