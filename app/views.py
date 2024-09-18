@@ -13,6 +13,14 @@ from app.base.views_base import ViewBase
 from app.forms import UserRegistrationForm
 
 
+class MainPageView(ViewBase):
+    PROHIBITED_METHODS: tuple = ('put', 'post', 'patch', 'delete')
+
+    @staticmethod
+    def get(request):
+        return render(request, 'main/main_page.html')
+
+
 class UserRegistrationView(ViewBase):
     PROHIBITED_METHODS: tuple = ('put', 'patch', 'delete')
     INVALID_FORM_ERROR: str = 'Invalid form data provided'
@@ -157,7 +165,7 @@ class UserRegistrationView(ViewBase):
 #             data['main'] = settings
 #         if ProjectSettings.objects.get().clear_local_cache:
 #             _delete_dir(path.join(getcwd(), 'results'))
-#         return render(request, 'index.html', data)
+#         return render(request, 'main_page.html', data)
 #     else:
 #         form = FileUploadForm()
-#     return render(request, 'index.html', {'form': form})
+#     return render(request, 'main_page.html', {'form': form})
