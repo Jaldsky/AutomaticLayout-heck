@@ -1,27 +1,34 @@
-from typing import Dict, Union
-from os import path, getcwd, listdir, makedirs
-from shutil import rmtree, move
-
-from datetime import datetime
-from json import loads
-import logging
-
-from django.core.handlers.wsgi import WSGIRequest
+# from typing import Dict, Union
+# from os import path, getcwd, listdir, makedirs
+# from shutil import rmtree, move
+#
+# from datetime import datetime
+# from json import loads
+# import logging
+#
+# from django.core.handlers.wsgi import WSGIRequest
 from django.shortcuts import render, redirect
 
+from app.base.views_base import ViewBase
 from app.forms import UserRegistrationForm
 
 
-def register(request):
-    if request.method == 'POST':
+class UserRegistrationView(ViewBase):
+    PROHIBITED_METHODS: tuple = ('put', 'patch', 'delete')
+    INVALID_FORM_ERROR: str = 'Invalid form data provided'
+
+    @staticmethod
+    def get(request):
+        form = UserRegistrationForm()
+        return render(request, 'account/register_user.html', {'form': form})
+
+    @staticmethod
+    def post(request):
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('/compare')
-    else:
-        form = UserRegistrationForm()
-    return render(request, 'registration.html', {'form': form})
-
+            return redirect('/admin/')
+        return render(request, 'register_user.html', {'form': form})
 
 # def compare(request: WSGIRequest) -> render:
 #     if request.method == 'POST' and request.FILES['image']:
