@@ -28,7 +28,7 @@ class UserRegistrationView(ViewBase):
         if form.is_valid():
             form.save()
             return redirect('/admin/')
-        return render(request, 'register_user.html', {'form': form})
+        return render(request, 'account/register_user.html', {'form': form})
 
 # def compare(request: WSGIRequest) -> render:
 #     if request.method == 'POST' and request.FILES['image']:
