@@ -16,6 +16,7 @@ DEBUG = os.getenv('DEBUG', 'true').lower() == 'true'
 PROD_HOST = os.getenv('PROD_HOST')
 SECRET_KEY = "public_secret_key"
 ALLOWED_HOSTS = ['testserver', '127.0.0.1']
+AUTH_USER_MODEL = 'app.AuthUser'
 
 if PROD_HOST and not DEBUG:
     ALLOWED_HOSTS = [PROD_HOST]
