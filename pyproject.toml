@@ -1,0 +1,35 @@
+[tool.poetry]
+name = "automatic-layout-check"
+version = "1.0.0"
+description = "Your project description"
+authors = ["Artem Ryzhenkov <RyzhenkovArt@yandex.ru"]
+repository = "https://github.com/Jaldsky/automatic-layout-check"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+django = "^5.1.1"
+numpy = "^1.26.4"
+opencv-python = "^4.10.0.84"
+pillow = "^10.4.0"
+easyocr = "^1.7.1"
+scikit-learn = "^1.5.2"
+scikit-image = "^0.24.0"
+keras = "^3.5.0"
+tensorflow = "^2.17.0"
+
+[tool.poetry.group.dev.dependencies]
+flake8 = "^7.1.1"
+
+[build-system]
+requires = ["poetry-core>=1.8.3"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.flake8]
+ignore-decorators = "property"
+count = true
+filename = "*.py"
+max-line-length = 120
+max-complexity = 10
+disable-noqa = false
+exclude = ".git,.idea,__pycache__,.pytest_cache,venv,*tasks/invoke*"
+ignore = ["A003", "D100", "D101", "D102", "D102", "D103","D104", "D107", "D203", "D212", "D400", "E203", "I900", "W503"]
