@@ -1,10 +1,8 @@
 import os
 from pathlib import Path
 
-
-BASE_DIR = Path(__file__).resolve().parent.parent  # project root directory
-MEDIA_ROOT = os.path.join(BASE_DIR, 'app', 'media')
-STATIC_URL = 'static/'
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 CACHE_PATH = os.path.join(BASE_DIR, 'cache')
 
@@ -14,13 +12,57 @@ VGG16_THRESHOLD = 0.8
 
 UPLOADS_FILES_PATH = 'results/uploads'  # folder for downloadable content
 
-SECRET_KEY = 'django-insecure-4)ycj8^ih^xaq+b3+%0z1zdm&0ufhv29i5mpjdmjum+=_di!l8'
+DEBUG = os.getenv('DEBUG', 'true').lower() == 'true'
+PROD_HOST = os.getenv('PROD_HOST')
+SECRET_KEY = "public_secret_key"
+ALLOWED_HOSTS = ['testserver', '127.0.0.1']
 
-DEBUG = True
+if PROD_HOST and not DEBUG:
+    ALLOWED_HOSTS = [PROD_HOST]
+
+if not DEBUG:
+    SECRET_KEY = os.getenv('SECRET_KEY')
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/5.1/howto/static-files/
+STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles/'
+STATICFILES_DIRS = [
+    BASE_DIR / 'app/static',
+]
+MEDIA_ROOT = os.path.join(BASE_DIR, 'app', 'media')
+
+# Internationalization
+# https://docs.djangoproject.com/en/5.1/topics/i18n/
+
 LANGUAGE_CODE = 'en-us'
+
 TIME_ZONE = 'UTC'
+
 USE_I18N = True   # internalization
+
 USE_TZ = True  # time zone support
+
+# Database
+# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+else:  # initialize only one DB
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'HOST': os.getenv("POSTGRES_HOST"),
+            'PORT': os.getenv("POSTGRES_PORT"),
+            'NAME': os.getenv("POSTGRES_DB"),
+            'USER': os.getenv("POSTGRES_USER"),
+            'PASSWORD': os.getenv("POSTGRES_PASSWORD"),
+        }
+    }
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -55,15 +97,26 @@ TEMPLATES = [
     },
 ]
 
+# Password validation
+# https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
+
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
+]
+
 ROOT_URLCONF = 'app.urls'
 
 WSGI_APPLICATION = 'main.wsgi.application'
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(os.getcwd(), 'database.db')
-    }
-}
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
