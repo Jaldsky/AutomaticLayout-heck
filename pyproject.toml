@@ -2,7 +2,7 @@
 name = "automatic-layout-check"
 version = "1.0.0"
 description = "Your project description"
-authors = ["Artem Ryzhenkov <RyzhenkovArt@yandex.ru"]
+authors = ["Artem Ryzhenkov <RyzhenkovArt@yandex.ru>"]
 repository = "https://github.com/Jaldsky/automatic-layout-check"
 
 [tool.poetry.dependencies]
