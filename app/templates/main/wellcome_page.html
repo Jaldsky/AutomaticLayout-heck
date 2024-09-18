@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% load static %}
+    <title>Automatic Layout Check service</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'styles/wellcome_page.css' %}">
+</head>
+<body>
+    <header>
+        <h1>Welcome to Automatic Layout Check service</h1>
+    </header>
+    <p>Automatic Layout Check is a web service that allows users to check the correctness of HTML
+        and CSS markup against a predefined template.</p>
+    <p>You are not authorized! To use the service please log in or register!</p>
+    <ul class="navbar">
+        <li><a href="{% url 'register_user' %}">Register</a></li>
+        <li><a href="/admin/">Login</a></li>
+    </ul>
+</body>
+</html>

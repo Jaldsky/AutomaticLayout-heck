@@ -18,7 +18,9 @@ class MainPageView(ViewBase):
 
     @staticmethod
     def get(request):
-        return render(request, 'main/main_page.html')
+        if request.user.is_authenticated:
+            return render(request, 'main/main_page.html')
+        return render(request, 'main/wellcome_page.html')
 
 
 class UserRegistrationView(ViewBase):
