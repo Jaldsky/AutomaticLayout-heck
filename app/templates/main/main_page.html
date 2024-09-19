@@ -2,18 +2,17 @@
 <html lang="ru">
 <head>
     {% load static %}
-    <title>Automatic Layout Check</title>
+    <title>Automatic Layout Check service</title>
     <link rel="shortcut icon" type="image/png" href="{% static 'img/favicon.ico' %}"/>
     <link rel="stylesheet" href="{% static 'styles/main_page.css' %}">
     <meta charset="UTF-8">
-    <title>Automatic Layout Check</title>
 </head>
 <body>
-	<div class="container">
+    <header>
+        <h1>Automatic Layout Check service</h1>
+    </header>
 
-        <div class="title-block">
-			<h1>Automatic Layout Checker</h1>
-		</div>
+	<div class="container">
 
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
@@ -71,10 +70,10 @@
             </div>
         </div>
 
-        <div class="small-block">
+
         {% for data in sample %}
             {% if 'CMSE' in data or 'CSSIM' in data or 'VGG16' in data%}
-
+            <div class="small-block">
                 <div class="results-block">
                     <table class="table">
                         <tbody>
@@ -116,13 +115,14 @@
                         </tbody>
                     </table>
                 </div>
-
+            </div>
             {% endif %}
         {% endfor %}
-        </div>
+
         </form>
 
-		<div class="large-block">
+        {% if reference_sample and sample %}
+		    <div class="large-block">
             {% if reference_sample %}
                 <div class="image-block">
                     <label id="pic_title">Эталонное изображение</label>
@@ -141,7 +141,7 @@
                 </div>
             {% endif %}
 		</div>
-
+        {% endif %}
 	</div>
 </body>
 </html>
