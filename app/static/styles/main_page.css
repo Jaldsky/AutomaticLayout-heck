@@ -1,8 +1,15 @@
 body {
     font-family: 'Poppins', sans-serif;
-	margin: 0;
-	padding: 0;
-	background-color: #f5f5f5;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+header {
+    background-color: #7F3DFF;
+    padding: 10px 0;
+    color: #fff;
 }
 
 img {
@@ -28,7 +35,6 @@ span {
 
 
 /* Blocks */
-.title-block,
 .settings-block,
 .upper-block,
 .small-block,
@@ -38,7 +44,6 @@ span {
 	flex-wrap: wrap;
 }
 
-.title-block,
 .settings-block,
 .upper-block {
 	align-items: center;
