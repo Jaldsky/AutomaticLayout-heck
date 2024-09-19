@@ -1,6 +1,11 @@
-from django.contrib.auth.base_user import BaseUserManager
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.base_user import BaseUserManager, AbstractBaseUser
+from django.contrib.auth.models import AbstractUser, PermissionsMixin
+from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
+
+from app.utils.validators import EmailValidator, UsernameValidator
+
+
 # from django.db.models.signals import pre_delete, pre_save, post_save
 # from django.dispatch import receiver
 
@@ -33,13 +38,36 @@ class CustomUserManager(BaseUserManager):
         return self.create_user(email, password, **extra_fields)
 
 
-class AuthUser(AbstractUser):
-    email = models.EmailField(unique=True)
+class AuthUser(AbstractBaseUser, PermissionsMixin):
+    username_validator = UsernameValidator()
+    email_validator = EmailValidator()
+
+    username = models.CharField(
+        max_length=25, unique=True, validators=[username_validator],
+        help_text=(
+            "Required 25 characters or fewer. Letters, digits and . _ only."
+        ),
+        error_messages={
+            "unique": "A user with that username already exists.",
+        },
+    )
+    email = models.EmailField(
+        max_length=50, unique=True, validators=[email_validator],
+        help_text=(
+            "Required 50 characters or fewer. Letters, digits and @ . _ only."
+        ),
+        error_messages={
+            "unique": "Invalid email.",
+        },
+    )
 
     is_staff = models.BooleanField(default=True)  # can the user log in
     is_active = models.BooleanField(default=True)
 
     objects = CustomUserManager()
+
+    USERNAME_FIELD = 'email'
+    EMAIL_FIELD = 'email'
 
 #
 #
