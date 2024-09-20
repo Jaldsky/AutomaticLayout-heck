@@ -38,7 +38,6 @@ span {
 
 
 
-.upper-block,
 .small-block,
 .large-block,
 .results-block {
@@ -52,9 +51,7 @@ span {
 	padding:20px;
 }
 
-.upper-block {
-	padding: 20px;
-}
+
 
 .small-block {
 	justify-content: space-between;
@@ -96,20 +93,26 @@ span {
 	margin:5px;
 }
 
-/* Buttons */
 .execute-button,
 .file-upload {
+    width: 175px;
 	margin-left: 10px;
 	display: inline-block;
-	position: sticky;
+	position: relative;
 	overflow: hidden;
 	font-size: 16px;
-	padding: 10px 25px;
+	padding: 8px 20px;
 	cursor: pointer;
 	background-color: #3a7bd5;
-	color: #fff;
 	transition: background-color 0.3s ease;
-	border-radius: 10px;
+	border-radius: 8px;
+	margin-bottom: 10px;
+	box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.execute-button {
+    padding: 0px;
+    width: 78px;
 }
 
 .settings-menu {
@@ -133,10 +136,6 @@ span {
     background-color: #7c37ad;
 }
 
-.execute-button {
-	padding: 0px;
-	margin-left: 40px;
-}
 
 /* Switcher */
 .switcher {
