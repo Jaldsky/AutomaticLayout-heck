@@ -22,16 +22,22 @@ span {
 }
 
 .container {
-	max-width: 90%;
-	margin: 0 auto;
+    width: 80%;
+    max-width: 600px;
+	margin: 20px auto;
 	padding: 10px 20px 20px 20px;
-	background-color: #fff;
 	border-radius: 10px;
 	box-shadow: 0 0 10px rgba(0,0,0,0.1);
+	align-items: center;
+	justify-content: center;
+	padding: 5px;
+	background: linear-gradient(to bottom, #7F3DFF, #3a7bd5);
+	margin-bottom: 10px;
+	color: #fff;
 }
 
 
-.settings-block,
+
 .upper-block,
 .small-block,
 .large-block,

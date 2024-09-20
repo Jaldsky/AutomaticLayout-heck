@@ -17,6 +17,8 @@
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="settings-block">
+
+                <h1>General settings</h1>
                 <div class="settings-menu">
                     <span>Color text</span>
                     <div class="switcher">
@@ -31,6 +33,9 @@
                         <label for="clear_local_cache"></label>
                     </div>
                 </div>
+
+                <h1>Comparison method</h1>
+
                 <div class="settings-menu">
                     <span>Mean Squared Error</span>
                     <div class="switcher">
