@@ -21,8 +21,6 @@ span {
 	padding-right: 3px;
 }
 
-/* Container */
-
 .container {
 	max-width: 90%;
 	margin: 0 auto;
@@ -33,8 +31,6 @@ span {
 }
 
 
-
-/* Blocks */
 .settings-block,
 .upper-block,
 .small-block,
@@ -42,18 +38,6 @@ span {
 .results-block {
 	display: flex;
 	flex-wrap: wrap;
-}
-
-.settings-block,
-.upper-block {
-	align-items: center;
-	justify-content: center;
-	padding: 5px;
-	border-radius: 10px;
-	background: linear-gradient(to right, #7c37ad, #3a7bd5);
-	margin-bottom: 10px;
-	box-shadow: 0 0 10px rgba(0,0,0,0.1);
-	color: #fff;
 }
 
 .settings-block {
