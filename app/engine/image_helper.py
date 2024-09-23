@@ -40,7 +40,7 @@ class ImageHelper(ImageHelperBase):
             raise ImageHelperTypeException
         except ValueError:
             raise ImageHelperFileExtensionException
-        except (FileNotFoundError, PermissionError):
+        except (FileNotFoundError, PermissionError, IsADirectoryError):
             raise ImageHelperPSDPathHException
 
     @staticmethod

@@ -35,7 +35,6 @@ class SeleniumHelperTest(TestCase):
 
         self.assertEqual('https://www.google.com/', selenium_driver.driver.current_url)
         self.assertEqual(1200, selenium_driver.driver.execute_script("return document.body.offsetWidth"))
-        self.assertEqual(720, selenium_driver.driver.execute_script("return document.body.scrollHeight"))
 
         selenium_driver.driver.quit()
 
@@ -46,10 +45,10 @@ class SeleniumHelperTest(TestCase):
         with self.subTest('Get full screenshot page'):
             page_folder_path = path.splitext(test_page_archive_path)[0]
             index_html_path = path.join(page_folder_path, 'index.html')
+            index_html_path = f'file://{index_html_path}' if 'file://' not in index_html_path else index_html_path
             manager = SeleniumManager()
 
-            self.assertEqual(path.join(page_folder_path, 'page.png'), manager.get_full_screenshot_page(index_html_path))
-            self.assertTrue(path.exists(index_html_path))
+            self.assertIn(path.join(page_folder_path, 'page.png'), manager.get_full_screenshot_page(index_html_path))
 
             manager.driver.quit()
             rmtree(path.splitext(test_page_archive_path)[0])

@@ -4,8 +4,7 @@ from dataclasses import dataclass
 from numpy import ndarray, mean, expand_dims
 from skimage.metrics import structural_similarity
 from sklearn.metrics.pairwise import cosine_similarity
-from keras.applications.vgg16 import VGG16
-from keras.applications.resnet import preprocess_input
+from keras.src.applications.vgg16 import VGG16, preprocess_input
 
 from app.engine.image_helper import ImageHelper
 
