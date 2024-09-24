@@ -8,10 +8,6 @@ from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver import Chrome
 
 
-# TODO move to project settings
-CHROME_DRIVER_PATH = path.join(getcwd(), 'app', 'engine', 'drivers', 'chromedriver.exe')
-
-
 @dataclass
 class SeleniumOptionsBase(ABC):
     """Base class for interacting with Selenium driver options."""
@@ -71,9 +67,8 @@ class SeleniumDriverBase(ABC):
 class SeleniumDriver(SeleniumDriverBase):
     """Class for interacting with Selenium driver."""
     custom_settings: Optional[list] = None
-    driver_path: str = CHROME_DRIVER_PATH
 
-    def __init__(self, custom_settings: Optional[list] = None, driver_path: str = CHROME_DRIVER_PATH) -> None:
+    def __init__(self, custom_settings: Optional[list] = None) -> None:
         if self.selenium_driver_type.lower() == 'chrome':
             try:
                 self.selenium_driver: WebDriver = Chrome(

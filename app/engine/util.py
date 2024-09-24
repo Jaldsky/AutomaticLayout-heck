@@ -4,7 +4,7 @@ import shutil
 import zipfile
 from typing import Optional
 
-SUPPORTED_ARCHIVE_FORMATS = ('zip', )
+from app.utils.constants import ARCHIVE_EXPANSION
 
 
 def unzip(archive_path: str, save_path: Optional[str] = None) -> Optional[str]:
@@ -25,7 +25,7 @@ def unzip(archive_path: str, save_path: Optional[str] = None) -> Optional[str]:
         save_path = os.path.splitext(archive_path)[0]
 
     _, extension = os.path.splitext(archive_path)
-    if extension.lstrip('.') not in SUPPORTED_ARCHIVE_FORMATS:
+    if extension.lstrip('.') not in ARCHIVE_EXPANSION:
         raise UnsupportedArchiveFormatException()
 
     with zipfile.ZipFile(archive_path, 'r') as zip_ref:

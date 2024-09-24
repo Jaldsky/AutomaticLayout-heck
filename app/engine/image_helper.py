@@ -7,8 +7,7 @@ from PIL import Image
 from psd_tools import PSDImage
 from numpy import ndarray
 
-# TODO move to project settings
-FILL_TEXT_COLOR = (0, 255, 0)  # green
+from app.utils.constants import FILL_TEXT_COLOR
 
 
 class Language(str, Enum):

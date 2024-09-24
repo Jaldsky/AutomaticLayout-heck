@@ -3,13 +3,7 @@ from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 CACHE_PATH = os.path.join(BASE_DIR, 'cache')
-
-MSE_THRESHOLD = 0.45
-SSIM_THRESHOLD = 0.5
-VGG16_THRESHOLD = 0.8
-
 UPLOADS_FILES_PATH = 'results/uploads'  # folder for downloadable content
 
 DEBUG = os.getenv('DEBUG', 'true').lower() == 'true'
