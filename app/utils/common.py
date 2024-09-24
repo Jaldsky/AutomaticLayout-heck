@@ -2,7 +2,7 @@ from datetime import datetime
 from django import setup
 from os import environ, path, getcwd, walk, makedirs, remove
 from shutil import rmtree
-from zipfile import ZipFile
+from zipfile import ZipFile, BadZipFile
 from uuid import uuid4
 
 from app.constants import ARCHIVE_EXPANSION
@@ -35,15 +35,14 @@ def unzip(archive_path: str, save_path: str | None = None) -> str | None:
 
     _, extension = path.splitext(archive_path)
     if extension.lstrip('.') not in ARCHIVE_EXPANSION:
-        raise UnsupportedArchiveFormatException()
-
-    with ZipFile(archive_path, 'r') as zip_ref:
-        try:
+        raise UnsupportedArchiveFormatException
+    try:
+        with ZipFile(archive_path, 'r') as zip_ref:
             extract_path = path.join(getcwd(), save_path)
             zip_ref.extractall(extract_path)
             return extract_path
-        except Exception as e:
-            raise UnZipFileException from e
+    except BadZipFile:
+        raise UnZipFileException
 
 
 def find_files_with_name(folder_path: str, key_file: str, inclusion: bool = False) -> list | None:

@@ -5,18 +5,19 @@ from random import choices
 from string import ascii_lowercase
 
 
-from app.engine.util import (
+from app.utils.common import (
     unzip,
     find_files_with_name,
     generate_uui,
     InvalidArchivePathException,
     ArchivePathNotFoundException,
-    UnsupportedArchiveFormatException
+    UnZipFileException
 )
+from main.settings import BASE_DIR
 
 
 class UtilTest(TestCase):
-    test_data = path.join(getcwd(), 'app', 'tests', 'test_data')
+    test_data = path.join(BASE_DIR, 'app', 'tests', 'test_data')
 
     @staticmethod
     def create_pages_structure(root_dir: str, key_file: str, count_pages: int):
@@ -55,7 +56,7 @@ class UtilTest(TestCase):
                 unzip('test_archive.zip', '')
 
         with self.subTest('Unzip with nonexistent archive path'):
-            with self.assertRaises(UnsupportedArchiveFormatException):
+            with self.assertRaises(UnZipFileException):
                 unzip(archive_rar_path)
 
     def test_search_folder_key_file_paths(self):

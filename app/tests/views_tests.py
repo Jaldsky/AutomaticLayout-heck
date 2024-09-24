@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 from django.test import Client
 
-from app.utils.utils import setup_environment
+from app.utils.common import setup_environment
 from app.views import UserRegistrationView
 
 setup_environment()

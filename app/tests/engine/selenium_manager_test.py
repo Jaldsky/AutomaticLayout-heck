@@ -3,7 +3,7 @@ from shutil import rmtree
 from unittest import TestCase
 
 from app.engine.selenium_manager import SeleniumOptions, SeleniumDriver, SeleniumManager
-from app.engine.util import unzip
+from app.utils.common import unzip
 
 
 class SeleniumHelperTest(TestCase):

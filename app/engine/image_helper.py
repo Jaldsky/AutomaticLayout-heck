@@ -55,7 +55,7 @@ class ImageHelper(ImageHelperBase):
         try:
             with Image.open(image_path) as image:
                 return image
-        except (FileNotFoundError, AttributeError):
+        except (FileNotFoundError, AttributeError, IsADirectoryError):
             raise ImageHelperGetImagePathException
 
     def get_image_resolution(self, image_path: str) -> tuple[int, int]:
