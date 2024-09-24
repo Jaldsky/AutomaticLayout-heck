@@ -7,7 +7,7 @@ from PIL import Image
 from psd_tools import PSDImage
 from numpy import ndarray
 
-from app.utils.constants import FILL_TEXT_COLOR
+from app.constants import FILL_TEXT_COLOR
 
 
 class Language(str, Enum):
