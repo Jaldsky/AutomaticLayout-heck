@@ -10,17 +10,55 @@
 from django.shortcuts import render, redirect
 
 from app.base.views_base import ViewBase
-from app.forms import UserRegistrationForm
+from app.forms import UserRegistrationForm, UserUploadFileForm
+from django.core.files.storage import FileSystemStorage
 
 
 class MainPageView(ViewBase):
-    PROHIBITED_METHODS: tuple = ('put', 'post', 'patch', 'delete')
+    PROHIBITED_METHODS: tuple = ('put', 'patch', 'delete')
 
     @staticmethod
     def get(request):
         if request.user.is_authenticated:
             return render(request, 'main/main_page.html')
         return render(request, 'main/wellcome_page.html')
+
+    @staticmethod
+    def post(request):
+        reference = request.FILES.get('reference')
+        compared = request.FILES.get('compared')
+        for file in (reference, compared):
+            form = UserUploadFileForm(request.POST, {'file': file})
+            if not form.is_valid():
+                return
+            form.save()
+        return render(request, 'main/main_page.html', {'form': form})
+
+
+
+
+
+# def execute(request: WSGIRequest) -> render:
+#     """Функция для выполнения основной логики.
+#
+#     Args:
+#         request: запрос от сервера.
+#     """
+#     if request.method == 'POST':
+#         settings = _update_settings(request.POST)
+#         folder_path = _create_results_folder()
+#         files_data = [upload_file_to_db(request, folder_path, 'pic'), upload_file_to_db(request, folder_path, 'zip')]
+#         data = Controller().exec(files_data, folder_path)
+#         if data:
+#             data['main'] = settings
+#         if ProjectSettings.objects.get().clear_local_cache:
+#             _delete_dir(path.join(getcwd(), 'results'))
+#         return render(request, 'main_page.html', data)
+#     else:
+#         form = FileUploadForm()
+#     return render(request, 'main_page.html', {'form': form})
+
+
 
 
 class UserRegistrationView(ViewBase):

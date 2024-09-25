@@ -93,7 +93,7 @@ class UserUploadFile(models.Model):
     uuid = models.CharField(max_length=36)
 
     def __str__(self):
-        return f'{self.uuid} ({self.timestamp})'
+        return f'{self.uuid} ({self.file_type}/{self.timestamp})'
 
 
 class ComparisonResults(models.Model):

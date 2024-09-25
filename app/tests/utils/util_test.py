@@ -8,7 +8,7 @@ from string import ascii_lowercase
 from app.utils.common import (
     unzip,
     find_files_with_name,
-    generate_uui,
+    get_uuid,
     InvalidArchivePathException,
     ArchivePathNotFoundException,
     UnZipFileException
@@ -92,5 +92,5 @@ class UtilTest(TestCase):
 
             rmtree(test_dir)
 
-    def test_generate_uui(self):
-        self.assertEqual(36, len(generate_uui()))
+    def test_get_uuid(self):
+        self.assertEqual(36, len(get_uuid()))

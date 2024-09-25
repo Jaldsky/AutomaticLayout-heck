@@ -1,8 +1,8 @@
 from enum import Enum
 
 from django import forms
-from app.models import AuthUser
-# from app.models import UploadedFile
+from app.models import AuthUser, UserUploadFile
+from app.utils.common import get_uuid, extract_extension
 
 
 class ErrorMessages(str, Enum):
@@ -38,19 +38,25 @@ class UserRegistrationForm(forms.ModelForm):
         return email
 
     def save(self, commit=True):
-        user = super(UserRegistrationForm, self).save(commit=False)
-        user.set_password(self.cleaned_data["password"])
+        form = super(UserRegistrationForm, self).save(commit=False)
+        form.set_password(self.cleaned_data["password"])
 
         if commit:
-            user.save()
-        return user
+            form.save()
+        return form
 
 
+class UserUploadFileForm(forms.ModelForm):
 
-# class FileUploadForm(forms.ModelForm):
-#     # title = forms.CharField(max_length=50)
-#     # file = forms.FileField()
-#
-#     class Meta:
-#         model = UploadedFile
-#         fields = ('file',)
+    class Meta:
+        model = UserUploadFile
+        fields = ['file']
+
+    def save(self, commit=True):
+        form = super(UserUploadFileForm, self).save(commit=False)
+        form.file_type = extract_extension(str(form.file))
+        form.uuid = get_uuid()
+
+        if commit:
+            form.save()
+        return form

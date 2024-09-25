@@ -58,8 +58,12 @@ def find_files_with_name(folder_path: str, key_file: str, inclusion: bool = Fals
     return paths
 
 
-def generate_uui():
+def get_uuid():
     return str(uuid4())
+
+
+def extract_extension(filename: str) -> str:
+    return filename.split('.')[-1]
 
 
 def create_folder(folder_path: str) -> None:
