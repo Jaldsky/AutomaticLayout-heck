@@ -25,8 +25,7 @@ class MainPageView(ViewBase):
 
     @staticmethod
     def post(request):
-        reference = request.FILES.get('reference')
-        compared = request.FILES.get('compared')
+        reference, compared = request.FILES.get('reference'), request.FILES.get('compared')
         for file in (reference, compared):
             form = UserUploadFileForm(data=request.POST, files={'file': file}, user=request.user)
             if not form.is_valid():
