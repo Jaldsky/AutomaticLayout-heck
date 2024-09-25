@@ -24,7 +24,7 @@ class MainPageView(ViewBase):
         return render(request, 'main/wellcome_page.html')
 
     @staticmethod
-    def post(request):
+    def upload_files(request) -> None:
         reference, compared = request.FILES.get('reference'), request.FILES.get('compared')
         for file in (reference, compared):
             form = UserUploadFileForm(data=request.POST, files={'file': file}, user=request.user)
