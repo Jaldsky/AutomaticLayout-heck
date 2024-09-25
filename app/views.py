@@ -23,6 +23,10 @@ class MainPageView(ViewBase):
             return render(request, 'main/main_page.html')
         return render(request, 'main/wellcome_page.html')
 
+    def post(self, request):
+        self.upload_files(request)
+        return render(request, 'main/main_page.html')
+
     @staticmethod
     def upload_files(request) -> None:
         reference, compared = request.FILES.get('reference'), request.FILES.get('compared')
