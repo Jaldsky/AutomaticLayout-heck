@@ -22,11 +22,12 @@ if not DEBUG:
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 ROOT_URLCONF = 'main.urls'
 STATIC_URL = 'static/'
+MEDIA_URL = 'media/'
 STATIC_ROOT = BASE_DIR / 'staticfiles/'
+MEDIA_ROOT = BASE_DIR / 'media/'
 STATICFILES_DIRS = [
     BASE_DIR / 'app/static',
 ]
-MEDIA_ROOT = os.path.join(BASE_DIR, 'app', 'media')
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
