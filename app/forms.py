@@ -52,8 +52,14 @@ class UserUploadFileForm(forms.ModelForm):
         model = UserUploadFile
         fields = ['file']
 
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super(UserUploadFileForm, self).__init__(*args, **kwargs)
+
     def save(self, commit=True):
         form = super(UserUploadFileForm, self).save(commit=False)
+
+        form.user = self.user
         form.file_type = extract_extension(str(form.file))
         form.uuid = get_uuid()
 

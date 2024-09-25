@@ -28,11 +28,11 @@ class MainPageView(ViewBase):
         reference = request.FILES.get('reference')
         compared = request.FILES.get('compared')
         for file in (reference, compared):
-            form = UserUploadFileForm(request.POST, {'file': file})
+            form = UserUploadFileForm(data=request.POST, files={'file': file}, user=request.user)
             if not form.is_valid():
                 return
             form.save()
-        return render(request, 'main/main_page.html', {'form': form})
+        return render(request, 'main/main_page.html')
 
 
 
