@@ -10,8 +10,10 @@
 from django.shortcuts import render, redirect
 
 from app.base.views_base import ViewBase
-from app.forms import UserRegistrationForm, UserUploadFileForm
-from django.core.files.storage import FileSystemStorage
+from app.forms import UserRegistrationForm, UserSettingsForm
+
+from app.models import UserUploadFile, UserSettings
+from app.utils.common import extract_extension, get_uuid
 
 
 class MainPageView(ViewBase):
@@ -20,22 +22,37 @@ class MainPageView(ViewBase):
     @staticmethod
     def get(request):
         if request.user.is_authenticated:
-            return render(request, 'main/main_page.html')
+            user_settings = UserSettings.objects.get_or_create(username=request.user)[0]
+            form = UserSettingsForm(instance=user_settings)
+            return render(request, 'main/main_page.html', {'form': form})
         return render(request, 'main/wellcome_page.html')
-
-    def post(self, request):
-        self.upload_files(request)
-        return render(request, 'main/main_page.html')
 
     @staticmethod
     def upload_files(request) -> None:
         reference, compared = request.FILES.get('reference'), request.FILES.get('compared')
         for file in (reference, compared):
-            form = UserUploadFileForm(data=request.POST, files={'file': file}, user=request.user)
-            if not form.is_valid():
-                return
-            form.save()
+            upload = UserUploadFile(
+                username=request.user,
+                file=file,
+                file_type=extract_extension(str(file)),
+                uuid=get_uuid()
+            )
+            upload.save()
         return render(request, 'main/main_page.html')
+
+    @staticmethod
+    def set_settings(request):
+        form = UserSettingsForm(request.POST, username=request.user)
+        if not form.is_valid():
+            return
+        form.save()
+        return form
+
+    def post(self, request):
+        self.upload_files(request)
+        form = self.set_settings(request)
+        return render(request, 'main/main_page.html', {'form': form})
+
 
 
 

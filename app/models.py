@@ -69,15 +69,22 @@ class UserSettings(models.Model):
     """
     username = models.ForeignKey(AuthUser, on_delete=models.CASCADE, primary_key=True)
 
-    clear_cache = models.BooleanField(default=True)
+    clear_cache = models.BooleanField(default=False)
     hide_text = models.BooleanField(default=False)
 
-    mse = models.BooleanField(default=True)
-    ssim = models.BooleanField(default=True)
+    mse = models.BooleanField(default=False)
+    ssim = models.BooleanField(default=False)
     vgg16 = models.BooleanField(default=False)
 
     def __str__(self):
-        return f'{self.username.name}\'s Settings'
+        return (
+            'Current settings: '
+            f'clear_cache is {self.clear_cache}, '
+            f'hide_text is {self.hide_text}, '
+            f'mse is {self.mse}, '
+            f'ssim is {self.ssim}, '
+            f'vgg16 is {self.vgg16}'
+        )
 
 
 class UserUploadFile(models.Model):
@@ -85,7 +92,7 @@ class UserUploadFile(models.Model):
     This model is used to store information about files uploaded by users,
     including the file itself, its name, type, and upload date.
     """
-    user = models.ForeignKey(AuthUser, on_delete=models.CASCADE)
+    username = models.ForeignKey(AuthUser, on_delete=models.CASCADE)
 
     file = models.FileField()
     timestamp = models.DateTimeField(auto_now=True)
@@ -101,7 +108,7 @@ class ComparisonResults(models.Model):
     This model is used to store information about comparisons performed by users,
     including the associated user session, cache UUID, and timestamp.
     """
-    user = models.ForeignKey(AuthUser, on_delete=models.CASCADE)
+    username = models.ForeignKey(AuthUser, on_delete=models.CASCADE)
 
     timestamp = models.DateTimeField(auto_now=True)
     uuid_reference = models.CharField(max_length=36)

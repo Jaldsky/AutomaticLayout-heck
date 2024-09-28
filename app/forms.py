@@ -1,8 +1,7 @@
 from enum import Enum
 
 from django import forms
-from app.models import AuthUser, UserUploadFile
-from app.utils.common import get_uuid, extract_extension
+from app.models import AuthUser, UserSettings
 
 
 class ErrorMessages(str, Enum):
@@ -46,22 +45,23 @@ class UserRegistrationForm(forms.ModelForm):
         return form
 
 
-class UserUploadFileForm(forms.ModelForm):
+class UserSettingsForm(forms.ModelForm):
 
     class Meta:
-        model = UserUploadFile
-        fields = ['file']
+        model = UserSettings
+        fields = ['clear_cache', 'hide_text', 'mse', 'ssim', 'vgg16']
 
     def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user', None)
-        super(UserUploadFileForm, self).__init__(*args, **kwargs)
+        self.username = kwargs.pop('username', None)
+        super(UserSettingsForm, self).__init__(*args, **kwargs)
 
     def save(self, commit=True):
-        form = super(UserUploadFileForm, self).save(commit=False)
+        form = super(UserSettingsForm, self).save(commit=False)
 
-        form.user = self.user
-        form.file_type = extract_extension(str(form.file))
-        form.uuid = get_uuid()
+        form.username = self.username
+        for setting in self.Meta.fields:
+            if self.data.get(setting):
+                setattr(form, setting, True)
 
         if commit:
             form.save()
