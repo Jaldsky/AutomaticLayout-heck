@@ -1,7 +1,27 @@
-venv
-env
-.idea
-**/__pycache__/
+# IDE
+.idea/
+
+# Python
 __pycache__/
+*/__pycache__/
+*.pyc
+
+# Virtual environments
+venv/
+.venv/
+env/
+.env/
+
+# Reports and Allure
+.allurectl/
+allure-results/
+allure_report/
+allure_results/
+allure_results-report/
+html_reports/
+
+# Logs
 debug.log
-.python-version
+
+# Databeses
+db.sqlite3
