@@ -70,7 +70,7 @@ def create_folder(folder_path: str) -> None:
     if not path.exists(folder_path):
         makedirs(folder_path)
 
-
+# есть дубль в general TODO перенести в general
 def remove_folder_or_file(folder_or_file_path: str) -> None:
     if path.exists(folder_or_file_path):
         if path.isfile(folder_or_file_path):
