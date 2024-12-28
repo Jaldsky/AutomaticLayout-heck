@@ -37,3 +37,8 @@ pip install poetry
 ``` bash
 poetry install
 ```
+
+4. **Выполнить установку драйвера chromium**
+```bash
+playwright install chromium
+```
