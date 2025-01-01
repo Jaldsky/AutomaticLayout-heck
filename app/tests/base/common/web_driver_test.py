@@ -5,7 +5,7 @@ from playwright.sync_api import sync_playwright
 
 from app.base.common.general import remove_file_or_folder, is_file_exists, merge_path_elements, get_current_path
 from app.base.common.web_driver import PlayWrightAction, PlaywrightSettings
-from app.base.types import Browser, PlayWrightPage, PageLocator, ScreenSavePath
+from app.base.types import Browser, PlayWrightPage, PageLocator, ScreenSavePath, Path
 
 
 class TestPlaywright(TestCase):
@@ -27,7 +27,7 @@ class TestPlaywright(TestCase):
         ):
             action = PlayWrightAction(pwa, PlaywrightSettings())
             _ = action.browser
-        self.assertIn(self.messages.INITIALIZE_BROWSER_ERROR, e.exception.message)
+        self.assertEqual(self.messages.INITIALIZE_BROWSER_ERROR, e.exception.message)
 
         with (
             self.subTest("Invalid config args"),
@@ -54,7 +54,7 @@ class TestPlaywright(TestCase):
         ):
             action = PlayWrightAction(pwa, PlaywrightSettings())
             _ = action.new_page
-        self.assertIn(self.messages.INITIALIZE_BROWSER_ERROR, e.exception.message)
+        self.assertEqual(self.messages.INITIALIZE_BROWSER_ERROR, e.exception.message)
 
     def test_goto_page(self):
         with (
@@ -88,7 +88,7 @@ class TestPlaywright(TestCase):
 
 
     def test_get_screenshot_page(self):
-        dir_tests_path = merge_path_elements([get_current_path(), "app", "tests", "base", "common"])
+        dir_tests_path: Path = merge_path_elements([get_current_path(), "app", "tests", "base", "common"])
         screen_save_path: ScreenSavePath = merge_path_elements([dir_tests_path, "screenshot.png"])
         url: PageLocator = "https://www.google.com/"
 
@@ -115,4 +115,4 @@ class TestPlaywright(TestCase):
 
             _ = action.get_screenshot_page(page, url, screen_save_path)
 
-        self.assertIn(self.messages.PAGE_TYPE_ERROR, e.exception.message)
+        self.assertEqual(self.messages.PAGE_TYPE_ERROR, e.exception.message)

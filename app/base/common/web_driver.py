@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import NoReturn
 
-from app.base.exceptions import PlayWrightException, PyTestsRunnerMessages
+from app.base.exceptions import PlayWrightActionException, PlayWrightActionMessages
 from app.base.types import Driver, Browser, Config, PageLocator, PlayWrightPage, ScreenSavePath
 
 
@@ -47,8 +47,8 @@ class PlaywrightSettings:
 class PlayWrightBrowser(WebDriver):
     """Класс playwright веб-драйвера."""
 
-    exception = PlayWrightException
-    messages = PyTestsRunnerMessages
+    exception = PlayWrightActionException
+    messages = PlayWrightActionMessages
 
     def __init__(self, driver: Driver, configure: 'PlaywrightSettings' = None):
         """Инициализация параметров для запуска."""

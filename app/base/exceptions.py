@@ -1,11 +1,11 @@
 from app.base.common.general import FormException, StringEnum
 
 
-class PlayWrightException(FormException):
-    """Исключение PlayWright."""
+class PlayWrightActionException(FormException):
+    """Исключение PlayWrightAction."""
 
 
-class PyTestsRunnerMessages(StringEnum):
+class PlayWrightActionMessages(StringEnum):
     """Сообщения для класса PlayWright."""
 
     INITIALIZE_BROWSER_ERROR: str = "Браузер не инициализирован!"
