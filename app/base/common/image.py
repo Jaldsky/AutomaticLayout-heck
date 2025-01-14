@@ -7,7 +7,7 @@ from psd_tools import PSDImage
 from app.base.common.general import is_file_exists
 from app.base.constants import Language, FILL_TEXT_COLOR
 from app.base.exceptions import ImageException, ImageMessages, ImageCVMessages, ImageCVException
-from app.base.types import ImgPath, FromFormatImg, ToFormatImg, ImageMatrix, ImgSavePath, ImgSize
+from app.base.types import ImgPath, FromFormatImg, ToFormatImg, ImgMatrix, ImgSavePath, ImgSize
 
 
 class Image:
@@ -71,7 +71,7 @@ class ImageCV:
     exception = ImageCVException
     messages = ImageCVMessages
 
-    def read_image(self, img_path: ImgPath) -> ImageMatrix | NoReturn:
+    def read_image(self, img_path: ImgPath) -> ImgMatrix | NoReturn:
         """Метод считывания изображения.
 
         Args:
@@ -91,7 +91,7 @@ class ImageCV:
         except Exception as e:
             raise self.exception(self.messages.IMG_READ_ERROR.format(msg=e.__str__()))
 
-    def save_image(self, img_matrix: ImageMatrix, save_path: ImgSavePath) -> ImgSavePath | NoReturn:
+    def save_image(self, img_matrix: ImgMatrix, save_path: ImgSavePath) -> ImgSavePath | NoReturn:
         """Метод сохранения изображения.
 
         Args:
@@ -101,7 +101,7 @@ class ImageCV:
         Returns:
             Путь с сохраненным изображением.
         """
-        if img_matrix is None or not isinstance(img_matrix, ImageMatrix):
+        if img_matrix is None or not isinstance(img_matrix, ImgMatrix):
             raise self.exception(self.messages.IMG_MATRIX_TYPE_ERROR)
         if save_path is None or not isinstance(save_path, ImgSavePath):
             raise self.exception(self.messages.INVALID_IMG_SAVE_PATH_ERROR)
@@ -116,7 +116,7 @@ class ImageCV:
         except Exception as e:
             raise self.exception(self.messages.IMG_SAVE_ERROR.format(msg=e.__str__()))
 
-    def resize_image(self, img_matrix: ImageMatrix, img_size: ImgSize) -> ImageMatrix | NoReturn:
+    def resize_image(self, img_matrix: ImgMatrix, img_size: ImgSize) -> ImgMatrix | NoReturn:
         """Метод изменения разрешения изображения.
 
         Args:
@@ -126,7 +126,7 @@ class ImageCV:
         Returns:
             Объект изображения в виде попиксельной матрицы с измененным размером.
         """
-        if not isinstance(img_matrix, ImageMatrix):
+        if not isinstance(img_matrix, ImgMatrix):
             raise self.exception(self.messages.IMG_MATRIX_TYPE_ERROR)
         if img_size is None or not isinstance(img_size, tuple):
             raise self.exception(self.messages.IMG_SIZE_TYPE_ERROR)
@@ -136,7 +136,7 @@ class ImageCV:
         except Exception as e:
             raise self.exception(self.messages.IMG_RESIZE_ERROR.format(msg=e.__str__()))
 
-    def convert_image_to_rgb(self, img_matrix: ImageMatrix) -> ImageMatrix | NoReturn:
+    def convert_image_to_rgb(self, img_matrix: ImgMatrix) -> ImgMatrix | NoReturn:
         """Метод конвертации изображения к RGB-формату.
 
         Args:
@@ -145,7 +145,7 @@ class ImageCV:
         Returns:
             Объект изображения в виде попиксельной матрицы приведенный к RGB-формату.
         """
-        if not isinstance(img_matrix, ImageMatrix):
+        if not isinstance(img_matrix, ImgMatrix):
             raise self.exception(self.messages.IMG_MATRIX_TYPE_ERROR)
 
         try:
@@ -153,7 +153,7 @@ class ImageCV:
         except Exception as e:
             raise self.exception(self.messages.IMG_CONVERT_RGB_ERROR.format(msg=e.__str__()))
 
-    def convert_image_to_grayscale(self, img_matrix: ImageMatrix) -> ImageMatrix | NoReturn:
+    def convert_image_to_grayscale(self, img_matrix: ImgMatrix) -> ImgMatrix | NoReturn:
         """Метод конвертации изображения к черно-белому формату.
 
         Args:
@@ -162,7 +162,7 @@ class ImageCV:
         Returns:
             Объект изображения в виде попиксельной матрицы приведенный к черно-белому формату.
         """
-        if not isinstance(img_matrix, ImageMatrix):
+        if not isinstance(img_matrix, ImgMatrix):
             raise self.exception(self.messages.IMG_MATRIX_TYPE_ERROR)
         try:
             return cv.cvtColor(img_matrix, cv.COLOR_BGR2GRAY)
@@ -171,8 +171,8 @@ class ImageCV:
 
     def is_images_the_same_pixels(
             self,
-            img_first: ImgPath | ImageMatrix,
-            img_second: ImgPath | ImageMatrix
+            img_first: ImgPath | ImgMatrix,
+            img_second: ImgPath | ImgMatrix
     ) -> bool | NoReturn:
         """Метод для проверки двух изображений на схожесть методом попиксельного сравнения.
 
@@ -183,16 +183,22 @@ class ImageCV:
         Returns:
             Утверждение схожи ли два изображения.
         """
-        if not isinstance(img_first, (ImgPath, ImageMatrix)):
+        if not isinstance(img_first, (ImgPath, ImgMatrix)):
             raise self.exception(self.messages.IMG_IS_SAME_TYPE_ERROR)
-        if not isinstance(img_second, (ImgPath, ImageMatrix)):
+        if not isinstance(img_second, (ImgPath, ImgMatrix)):
             raise self.exception(self.messages.IMG_IS_SAME_TYPE_ERROR)
 
         img_matrix_first = self.read_image(img_first) if isinstance(img_first, ImgPath) else img_first
         img_matrix_second = self.read_image(img_second) if isinstance(img_second, ImgPath) else img_second
 
         difference = cv.subtract(img_matrix_first, img_matrix_second)
-        blue, green, red = cv.split(difference)
+        colors_decomposition = cv.split(difference)
+        if len(colors_decomposition) == 1:
+            if cv.countNonZero(colors_decomposition[0]) == 0:
+                return True
+            return False
+
+        blue, green, red = colors_decomposition
 
         if cv.countNonZero(blue) == 0 and cv.countNonZero(green) == 0 and cv.countNonZero(red) == 0:
             return True
@@ -211,7 +217,7 @@ class ImageCV:
             save_path: Путь сохранения изображения.
             languages: Языки текста на изображении.
         """
-        img_matrix: ImageMatrix = self.read_image(img_path)
+        img_matrix: ImgMatrix = self.read_image(img_path)
 
         if not save_path:
             file_name: str = img_path.split("/")[-1].split(".")[0]

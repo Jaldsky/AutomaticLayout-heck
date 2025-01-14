@@ -1,4 +1,4 @@
-from typing import Any, Literal
+from typing import Any, Literal, TypedDict
 
 from numpy import ndarray
 from playwright.sync_api._generated import Browser, Page
@@ -15,11 +15,20 @@ PageLocator = str
 PlaywrightConfig = dict[str, Any]
 PlayWrightPage = Page
 
-
 # typing for Image class
 ImgPath = Path
 ImgSavePath = Path
 ImgSize = tuple[int, int]
 FromFormatImg = Literal["psd"]
 ToFormatImg = Literal["png"]
-ImageMatrix = ndarray
+ImgMatrix = ndarray
+
+# typing for Comparator class
+Similarity = float | int
+SimilarityResult = float
+ToGrayscale = float
+FeatureMatrix = ndarray
+
+class ComparatorResult(TypedDict):
+    is_similar: str
+    percent: float
