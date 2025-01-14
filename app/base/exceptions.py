@@ -51,3 +51,15 @@ class ImageCVMessages(StringEnum):
     IMG_CONVERT_RGB_ERROR: str = "Ошибка при конвертации изображения к RGB-формату: {msg}!"
     IMG_CONVERT_GRAYSCALE_ERROR: str = "Ошибка при конвертации изображения к черно-белому: {msg}!"
     IMG_FOUND_AND_HIDE_TEXT_ERROR: str = "Ошибка при поиске и закраски текста на изображении: {msg}!"
+
+class ComparatorException(FormException):
+    """Исключение Comparator."""
+
+
+class ComparatorMessages(StringEnum):
+    """Сообщения для класса Comparator."""
+
+    INVALID_IMG_TYPE_ERROR: str = "Некорректный тип изображения!"
+    PREPARE_IMG_TYPE_ERROR: str = "Ошибка типа при подготовке к сравнению изображений!"
+    PREPARE_IMG: str = "Подготовка изображения к сравнению..."
+    RESULT_COMPARATOR: str = "Изображения похожи на {percent} процента"
